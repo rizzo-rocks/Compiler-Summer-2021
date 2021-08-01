@@ -34,8 +34,6 @@ public:
 
 // ---------------------------------
 
-// adding a little comment so that i can test pushing and not pull requesting!
-
 int order_of_ops[22] = {
     '(', 61,
     ')', 62,
@@ -66,12 +64,12 @@ public:
         this->right = right;
     }
 
-    node(char val) {
+    /*node(char val) {
         this->digit = -1;
         this->value = val;
         this->left = nullptr;
         this->right = nullptr;
-    }
+    }*/
 
     node(char val, node* left, node* right) {
         this->digit = -1;
@@ -146,9 +144,7 @@ char operator_stack[OP_STACK_SIZE] = {};
 int operator_index = 0; // points to the next available slot
 
 char top_operator() {
-    char top = operator_stack[--operator_index];
-    operator_index++;
-    return top;
+    return operator_stack[operator_index-1];
 }
 
 void push_operator(char op) {
@@ -156,7 +152,7 @@ void push_operator(char op) {
 
     if (operator_index == OP_STACK_SIZE) {
         cout << "Operator stack full.\n";
-        operator_index--;
+        exit(1);
     }
 }
 
@@ -252,7 +248,7 @@ int main() {
 
     bool seen_paren = false;
 
-    digit_stack.push(new node('$'));    // push OP not this wordy ass shit
+    digit_stack.push(new node(-1, '$', nullptr, nullptr));    
     push_operator('$');
 
     cout << ">> " << expression << "\n";
@@ -383,7 +379,5 @@ int main() {
         cout << "Not a valid expression: " << expression << endl;
         return -1;
     }
-
-
     return 0;
 }
