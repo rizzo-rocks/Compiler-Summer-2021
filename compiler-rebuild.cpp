@@ -70,31 +70,28 @@ public:
     }
 
     void print_postfix() {
-        if (this->left != nullptr) { left->print_postfix(); }
+        if (this->left)
+            left->print_postfix(); 
 
-        if (this->right != nullptr) { right->print_postfix(); }
+        if (this->right) 
+            right->print_postfix();
 
-        if (this->value == 'N') {
-            cout << "Push " << this->digit << "\n";
-        }
-        else if (this->value == '+') {
-            cout << "Sum\n";
-        }
-        else if (this->value == '-') {
-            cout << "Minus\n";
-        }
-        else if (this->value == '*') {
-            cout << "Mul\n";
-        }
-        else if (this->value == '/') {
-            cout << "Div\n";
-        }
-        else if (this->value == '@') {
-            cout << "Neg\n";
+        switch (this->value) {
+            case 'N':  cout << "Push " << this->digit << "\n"; break;
+            case '+':  cout << "Sum\n";   break;
+            case '-':  cout << "Minus\n"; break;
+            case '*':  cout << "Mul\n";   break;
+            case '/':  cout << "Div\n";   break;
+            case '@':  cout << "Neg\n";   break;
+            case 'E': break;
+            case 'F': break;
+            default:  
+                cerr << "Unknown node " << this->value << "\n";  
+                exit(1);
         }
     }
 
-    int get_precidence() {
+    int get_precedence() {
         int index = 0;
         while (order_of_ops[index] != this->value) {
             index += 2;
@@ -179,9 +176,29 @@ void reduce() {
     node* op;
     char op_char = pop_operator();
 
+<<<<<<< HEAD
     if (op_char == '*' || op_char == '/' || op_char == '+' || op_char == '-')  op = new node(op_char, num1, num2);
     else {
         cout << "Cannot reduce with type " << op_char << endl;
+=======
+    /*if (num1->get_precedence() == num2->get_precedence()) {*/    
+    // this messes up the arithmatic between nums that have been neg'ed and normal positive nums
+        op = new node(op_char, num1, num2);
+        if (op_char == '*') {
+            result = new node((num1->get_digit() * num2->get_digit()), 'F', op, nullptr);
+        }
+        else if (op_char == '/') {
+            result = new node((num1->get_digit() / num2->get_digit()), 'F', op, nullptr);
+        }
+        else {
+            cout << "Cannot reduce with type " << op_char << endl;
+            return;
+        }
+        digit_stack.push(result);
+    /*}
+    else {
+        cout << "Cannot reduce type " << num1->get_precedence() << " with type " << num2->get_precedence() << "\n";
+>>>>>>> e5c9730cc4f1caa283cbabe949f44c1e3179ae7a
         return;
     }
 
