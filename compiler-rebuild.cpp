@@ -34,7 +34,7 @@ public:
 
 // ---------------------------------
 
-int order_of_ops[22] = {
+int order_of_ops[18] = {
     '(', 61,
     ')', 62,
     '@', 51,
@@ -42,8 +42,6 @@ int order_of_ops[22] = {
     '/', 42,
     '+', 31,
     '-', 32,
-    'E', 13,
-    'F', 12,
     'N', 11,
     '$', 0
 };
@@ -63,13 +61,6 @@ public:
         this->left = left;
         this->right = right;
     }
-
-    /*node(char val) {
-        this->digit = -1;
-        this->value = val;
-        this->left = nullptr;
-        this->right = nullptr;
-    }*/
 
     node(char val, node* left, node* right) {
         this->digit = -1;
@@ -169,7 +160,7 @@ void print_op_stack() {
 
 void reduce_negation() {
     node* num1 = digit_stack.pop();
-    node* result = new node(-num1->get_digit(), '@', num1, nullptr);
+    node* result = new node(/*-num1->get_digit(),*/ '@', num1, nullptr);
     digit_stack.push(result);
     (void)pop_operator();
 }
@@ -179,59 +170,19 @@ void reduce_to_number(int num) {
     digit_stack.push(temp);
 }
 
-void reduce_number_to_factor() {
+void reduce() {
     node* num2 = digit_stack.pop();
     node* num1 = digit_stack.pop();
-    node* result;
     node* op;
     char op_char = pop_operator();
 
-    /*if (num1->get_precedence() == num2->get_precedence()) {*/    
-    // this messes up the arithmatic between nums that have been neg'ed and normal positive nums
-        op = new node(op_char, num1, num2);
-        if (op_char == '*') {
-            result = new node((num1->get_digit() * num2->get_digit()), 'F', op, nullptr);
-        }
-        else if (op_char == '/') {
-            result = new node((num1->get_digit() / num2->get_digit()), 'F', op, nullptr);
-        }
-        else {
-            cout << "Cannot reduce with type " << op_char << endl;
-            return;
-        }
-        digit_stack.push(result);
-    /*}
+    if (op_char == '*' || op_char == '/' || op_char == '+' || op_char == '-')  op = new node(op_char, num1, num2);
     else {
-        cout << "Cannot reduce type " << num1->get_precedence() << " with type " << num2->get_precedence() << "\n";
+        cout << "Cannot reduce with type " << op_char << endl;
         return;
-    }*/
-}
+    }
 
-void reduce_factor_to_sum() {
-    node* num2 = digit_stack.pop();
-    node* num1 = digit_stack.pop();
-    node* result;
-    node* op;
-    char op_char = pop_operator();
-
-    /*if (num1->get_precidence() == num2->get_precidence()) {*/
-        op = new node(op_char, num1, num2);
-        if (op_char == '+') {
-            result = new node((num1->get_digit() + num2->get_digit()), 'E', op, nullptr);
-        }
-        else if (op_char == '-') {
-            result = new node((num1->get_digit() - num2->get_digit()), 'E', op, nullptr);
-        }
-        else {
-            cout << "Cannot reduce with type " << op_char << endl;
-            return;
-        }
-        digit_stack.push(result);
-    /*}
-    else {
-        cout << "Cannot reduce type " << num1->get_precidence() << " with type " << num2->get_precidence() << "\n";
-        return;
-    } */
+    digit_stack.push(op);
 }
 
 // --------------------------------
@@ -304,11 +255,11 @@ int main() {
                     switch (top) {
                     case '-':
                     case '+':
-                        reduce_factor_to_sum();
+                        reduce();
                         break;
                     case '/':
                     case '*':
-                        reduce_number_to_factor();
+                        reduce();
                         break;
                     }
                 }
@@ -331,12 +282,12 @@ int main() {
                     case '-':
                     case '+':
                         if (current == '+' || current == '-') {
-                            reduce_factor_to_sum();
+                            reduce();
                         }
                         break;
                     case '/':
                     case '*':
-                        reduce_number_to_factor();
+                        reduce();
                         break;
                 }
                 push_operator(current);
@@ -355,11 +306,11 @@ int main() {
             switch (top) {
             case '-':
             case '+':
-                reduce_factor_to_sum();
+                reduce();
                 break;
             case '/':
             case '*':
-                reduce_number_to_factor();
+                reduce();
                 break;
             case '(':
                 cout << "Error -- unclosed paren\n";
