@@ -34,10 +34,11 @@ public:
 
 // ---------------------------------
 
-int order_of_ops[24] = {
-    '(', 71,
-    ')', 72,
-    '@', 61,
+int order_of_ops[26] = {
+    '(', 81,
+    ')', 82,
+    '@', 71,
+    '^', 61,
     '*', 51,
     '/', 52,
     '+', 41,
@@ -88,6 +89,7 @@ public:
             case '@':  cout << "Neg\n";   break;
             case '&':  cout << "And\n";   break;
             case '|':  cout << "Or\n";    break;
+            case '^':  cout << "Exp\n";   break;
             case 'E': break;
             case 'F': break;
             default:  
@@ -166,21 +168,6 @@ void reduce_to_number(int num) {
     digit_stack.push(temp);
 }
 
-/*void reduce_logical() {
-    node* num2 = digit_stack.pop();
-    node* num1 = digit_stack.pop();
-    node* op;
-    char op_char = pop_operator();
-
-    if (op_char == '&' || op_char == '|') {
-        op = new node(op_char, num1, num2);
-    }
-    else {
-        cerr << "Reduce_Logical: Cannot reduce with type " << op_char << endl;
-        exit(1);
-    }
-}*/
-
 void reduce() {
     node* num2 = digit_stack.pop();
     node* num1 = digit_stack.pop();
@@ -189,7 +176,8 @@ void reduce() {
 
     if (op_char == '*' || op_char == '/' 
         || op_char == '+' || op_char == '-'
-        || op_char == '&' || op_char == '|') {
+        || op_char == '&' || op_char == '|'
+        || op_char == '^') {
         op = new node(op_char, num1, num2);
     }
     else {
@@ -202,9 +190,9 @@ void reduce() {
 
 // -------------------------------- precedence helper
 
-int get_precedence(char current) {
+int get_precedence(char op) {
         int index = 0;
-        while ((order_of_ops[index] != current) 
+        while ((order_of_ops[index] != op) 
             && (order_of_ops[index] != '\0')) {
             index += 2;
         }
@@ -253,6 +241,11 @@ int main() {
                 else {
                     push_operator('@');
                 }
+                continue;
+            }
+
+            if (current == '^') {
+                push_operator('^');
                 continue;
             }
 
@@ -312,20 +305,21 @@ int main() {
         while (top_operator() != '$') {
             char top = top_operator();
             switch (top) {
-            case '-':
-            case '+':
-            case '/':
-            case '*':
-            case '&':
-            case '|':
-                reduce();
-                break;
-            case '(':
-                cout << "Error -- unclosed paren\n";
-                return -1;
-            case '@':
-                reduce_negation();
-                break;
+                case '^':
+                case '-':
+                case '+':
+                case '/':
+                case '*':
+                case '&':
+                case '|':
+                    reduce();
+                    break;
+                case '(':
+                    cout << "Error -- unclosed paren\n";
+                    return -1;
+                case '@':
+                    reduce_negation();
+                    break;
             }
         }
         node* expression_tree = digit_stack.pop();
