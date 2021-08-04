@@ -1,0 +1,9 @@
+Enter an expression:
+>> (1&2)|(3&4)
+Push 1
+Push 2
+And
+Push 3
+Push 4
+And
+Or

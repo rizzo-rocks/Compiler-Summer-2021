@@ -72,5 +72,21 @@ if ! diff result expected9; then
   exit 1
 fi
 
+../a.out > result <<EOF
+2&3
+EOF
+if ! diff result expected10; then
+  echo error in test 10
+  exit 1
+fi
+
+../a.out > result <<EOF
+(1&2)|(3&4)
+EOF
+if ! diff result expected11; then
+  echo error in test 11
+  exit 1
+fi
+
 rm result*
 echo Passed.

@@ -166,6 +166,21 @@ void reduce_to_number(int num) {
     digit_stack.push(temp);
 }
 
+/*void reduce_logical() {
+    node* num2 = digit_stack.pop();
+    node* num1 = digit_stack.pop();
+    node* op;
+    char op_char = pop_operator();
+
+    if (op_char == '&' || op_char == '|') {
+        op = new node(op_char, num1, num2);
+    }
+    else {
+        cerr << "Reduce_Logical: Cannot reduce with type " << op_char << endl;
+        exit(1);
+    }
+}*/
+
 void reduce() {
     node* num2 = digit_stack.pop();
     node* num1 = digit_stack.pop();
@@ -173,11 +188,12 @@ void reduce() {
     char op_char = pop_operator();
 
     if (op_char == '*' || op_char == '/' 
-        || op_char == '+' || op_char == '-') {
+        || op_char == '+' || op_char == '-'
+        || op_char == '&' || op_char == '|') {
         op = new node(op_char, num1, num2);
     }
     else {
-        cerr << "Cannot reduce with type " << op_char << endl;
+        cerr << "Reduce: Cannot reduce with type " << op_char << endl;
         exit(1);
     }
 
@@ -286,7 +302,7 @@ int main() {
             if ((top_precedence >= current_precedence) && (top != '(')) {
                 reduce();
             }
-            
+
             push_operator(current);
             q = 0;
         }
@@ -300,6 +316,8 @@ int main() {
             case '+':
             case '/':
             case '*':
+            case '&':
+            case '|':
                 reduce();
                 break;
             case '(':
