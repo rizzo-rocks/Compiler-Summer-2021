@@ -34,16 +34,19 @@ public:
 
 // ---------------------------------
 
-int order_of_ops[18] = {
-    '(', 61,
-    ')', 62,
-    '@', 51,
-    '*', 41,
-    '/', 42,
-    '+', 31,
-    '-', 32,
+int order_of_ops[24] = {
+    '(', 71,
+    ')', 72,
+    '@', 61,
+    '*', 51,
+    '/', 52,
+    '+', 41,
+    '-', 42,
+    '&', 31,
+    '|', 21,
     'N', 11,
-    '$', 0
+    '$', 0,
+    'X', -1
 };
 
 // ---------------------------------
@@ -83,21 +86,14 @@ public:
             case '*':  cout << "Mul\n";   break;
             case '/':  cout << "Div\n";   break;
             case '@':  cout << "Neg\n";   break;
+            case '&':  cout << "And\n";   break;
+            case '|':  cout << "Or\n";    break;
             case 'E': break;
             case 'F': break;
             default:  
                 cerr << "Unknown node " << this->value << "\n";  
                 exit(1);
         }
-    }
-
-    int get_precedence() {
-        int index = 0;
-        while (order_of_ops[index] != this->value) {
-            index += 2;
-        }
-
-        return order_of_ops[++index]/10;
     }
 
     char get_char() {
@@ -123,7 +119,7 @@ public:
     }
 };
 
-// -------------------------------
+// ------------------------------- stack and stack helpers
 
 stack<node*> digit_stack;
 
@@ -139,7 +135,7 @@ void push_operator(char op) {
     operator_stack[operator_index++] = op;
 
     if (operator_index == OP_STACK_SIZE) {
-        cout << "Operator stack full.\n";
+        cerr << "Operator stack full.\n";
         exit(1);
     }
 }
@@ -156,11 +152,11 @@ void print_op_stack() {
     }
 }
 
-// --------------------------------
+// -------------------------------- reduction helpers
 
 void reduce_negation() {
     node* num1 = digit_stack.pop();
-    node* result = new node(/*-num1->get_digit(),*/ '@', num1, nullptr);
+    node* result = new node('@', num1, nullptr);
     digit_stack.push(result);
     (void)pop_operator();
 }
@@ -176,16 +172,36 @@ void reduce() {
     node* op;
     char op_char = pop_operator();
 
-    if (op_char == '*' || op_char == '/' || op_char == '+' || op_char == '-')  op = new node(op_char, num1, num2);
+    if (op_char == '*' || op_char == '/' 
+        || op_char == '+' || op_char == '-') {
+        op = new node(op_char, num1, num2);
+    }
     else {
-        cout << "Cannot reduce with type " << op_char << endl;
-        return;
+        cerr << "Cannot reduce with type " << op_char << endl;
+        exit(1);
     }
 
     digit_stack.push(op);
 }
 
-// --------------------------------
+// -------------------------------- precedence helper
+
+int get_precedence(char current) {
+        int index = 0;
+        while ((order_of_ops[index] != current) 
+            && (order_of_ops[index] != '\0')) {
+            index += 2;
+        }
+
+        if (order_of_ops[index] == 'X') {
+            cerr << "Operator not found\n";
+            exit(1);
+        }
+
+        return order_of_ops[++index]/10;
+    }
+
+// -------------------------------------------------------------------------------------
 
 int main() {
     int index = 0;
@@ -196,7 +212,7 @@ int main() {
 
     bool seen_paren = false;
 
-    digit_stack.push(new node(-1, '$', nullptr, nullptr));    
+    digit_stack.push(new node('$', nullptr, nullptr));    
     push_operator('$');
 
     cout << ">> " << expression << "\n";
@@ -239,29 +255,19 @@ int main() {
                 }
             }
             else {
-                cout << "Can't read " << current << endl;
-                return -1;
+                cerr << "Can't read " << current << endl;
+                exit(1);
             }
         }
         else {
             if (current == ')') {
                 if (!seen_paren) {
-                    cout << "Improper paren syntax -- can't start with closing paren\n";
-                    return -1;
+                    cerr << "Improper paren syntax -- can't start with closing paren\n";
+                    exit(1);
                 }
 
                 while (top_operator() != '(') {
-                    char top = top_operator();
-                    switch (top) {
-                    case '-':
-                    case '+':
-                        reduce();
-                        break;
-                    case '/':
-                    case '*':
-                        reduce();
-                        break;
-                    }
+                    reduce();
                 }
 
                 (void) pop_operator();
@@ -274,29 +280,15 @@ int main() {
             }
 
             char top = top_operator();
-            if (current == '+' || current == '-' 
-                || current == '*' || current == '/') {
-                switch (top) {
-                    case '$':
-                        break;
-                    case '-':
-                    case '+':
-                        if (current == '+' || current == '-') {
-                            reduce();
-                        }
-                        break;
-                    case '/':
-                    case '*':
-                        reduce();
-                        break;
-                }
-                push_operator(current);
-                q = 0;
+            int top_precedence = get_precedence(top);
+            int current_precedence = get_precedence(current);
+
+            if ((top_precedence >= current_precedence) && (top != '(')) {
+                reduce();
             }
-            else {
-                cout << "Operator error: " << current << endl;
-                return -1;
-            }
+            
+            push_operator(current);
+            q = 0;
         }
     }
 
@@ -306,8 +298,6 @@ int main() {
             switch (top) {
             case '-':
             case '+':
-                reduce();
-                break;
             case '/':
             case '*':
                 reduce();
@@ -324,8 +314,8 @@ int main() {
         expression_tree->print_postfix();
     }
     else {
-        cout << "Not a valid expression: " << expression << endl;
-        return -1;
+        cerr << "Not a valid expression: " << expression << endl;
+        exit(1);
     }
     return 0;
 }
