@@ -1,2 +1,5 @@
 a.out
-a.out.DSYM
+a.out.DSYM/
+.vscode/
+compiler-rebuild
+compiler-rebuild.dSYM/

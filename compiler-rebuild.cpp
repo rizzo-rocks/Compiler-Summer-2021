@@ -207,11 +207,18 @@ int get_precedence(char op) {
 
 // -------------------------------------------------------------------------------------
 
-int main() {
+int main(int argc, char **argv) {
     int index = 0;
     string expression = "";
-    std::cout << "Enter an expression:\n";
-    cin >> expression;
+
+    if (argc == 2) {
+        expression = argv[1];
+    }
+    else {
+        std::cout << "Enter an expression:\n";
+        cin >> expression;
+    }
+
     char current = expression[index];
 
     bool seen_paren = false;
