@@ -221,8 +221,6 @@ int main(int argc, char **argv) {
 
     char current = expression[index];
 
-    bool seen_paren = false;
-
     digit_stack.push(new node('$', nullptr, nullptr));    
     push_operator('$');
 
@@ -236,7 +234,6 @@ int main(int argc, char **argv) {
 
         if (q == 0) {
             if (current == '(') {
-                seen_paren = true;
                 push_operator(current);
                 continue;
             }
@@ -248,11 +245,6 @@ int main(int argc, char **argv) {
                 else {
                     push_operator('@');
                 }
-                continue;
-            }
-
-            if (current == '^') {
-                push_operator('^');
                 continue;
             }
 
@@ -277,16 +269,15 @@ int main(int argc, char **argv) {
         }
         else {
             if (current == ')') {
-                if (!seen_paren) {
-                    cerr << "Improper paren syntax -- can't start with closing paren\n";
-                    exit(1);
-                }
-
-                while (top_operator() != '(') {
+                while (top_operator() != '(' && top_operator() != '$') {
                     reduce();
                 }
 
-                (void) pop_operator();
+                if (top_operator() == '(') (void) pop_operator();
+                else if (top_operator() == '$') {
+                    cerr << "Error -- Paren never closed\n";
+                    exit(1);
+                }
 
                 while (top_operator() == '@') {
                     reduce_negation();
