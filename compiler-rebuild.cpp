@@ -285,10 +285,18 @@ int main(int argc, char **argv) {
 
             if (current >= '0' && current <= '9') { // gobble nums
                 int num = 0;
-                while (current >= '0' && current <= '9') { // must alter this to accept variable type
+                while (current >= '0' && current <= '9') { 
                     num = num * 10 + current - '0';
                     current = expression[++index];
                 }
+
+                if ((current >= 'A' && current <= 'Z')
+                || (current >= 'a' && current <= 'z') 
+                || (current == '_')) {
+                    cerr << "Error -- improper variable format\n";
+                    exit(1);
+                }
+
                 index--;
                 reduce_to_number(num);
                 q = 1;
@@ -315,9 +323,6 @@ int main(int argc, char **argv) {
                     while (top_operator() == '@') { 
                         reduce_negation();
                     }
-                    // gobble the variable until we either see something invalid or an op
-                    // store the variable as a node
-                    // the variable should be stored as a string
                 }
             else {
                 cerr << "Can't read " << current << endl;
