@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 
 using namespace std;
 
@@ -32,23 +31,53 @@ public:
     }
 };
 
+// --------------------------------- converting op precedence array to struct
+
+/*struct operators {
+    char* output;
+    int precedence;
+    char op;
+}; 
+
+operators open_paren, closed_paren, negation, exp, mult, div, add, sub, _and, _or, num, end, not_found;
+
+open_paren.output = */
+
 // ---------------------------------
 
+
 int order_of_ops[26] = {
-    '(', 81,
-    ')', 82,
-    '@', 71,
-    '^', 61,
-    '*', 51,
-    '/', 52,
-    '+', 41,
-    '-', 42,
-    '&', 31,
-    '|', 21,
-    'N', 11,
+    '@', 81,
+    '^', 71,
+    '*', 61,
+    '/', 62,
+    '+', 51,
+    '-', 52,
+    '&', 41,
+    '|', 31,
+    'N', 21,
+    '(', 11,
+    ')', 12,
     '$', 0,
     'X', -1
 };
+
+// -------------------------------- precedence helper
+
+int get_precedence(char op) {
+        int index = 0;
+        while ((order_of_ops[index] != op) 
+            && (order_of_ops[index] != '\0')) {
+            index += 2;
+        }
+
+        if (order_of_ops[index] == 'X') {
+            cerr << "Operator not found\n";
+            exit(1);
+        }
+
+        return order_of_ops[++index]/10;
+}
 
 // ---------------------------------
 
@@ -174,10 +203,7 @@ void reduce() {
     node* op;
     char op_char = pop_operator();
 
-    if (op_char == '*' || op_char == '/' 
-        || op_char == '+' || op_char == '-'
-        || op_char == '&' || op_char == '|'
-        || op_char == '^') {
+    if (get_precedence(op_char) > 0) {
         op = new node(op_char, num1, num2);
     }
     else {
@@ -187,23 +213,6 @@ void reduce() {
 
     digit_stack.push(op);
 }
-
-// -------------------------------- precedence helper
-
-int get_precedence(char op) {
-        int index = 0;
-        while ((order_of_ops[index] != op) 
-            && (order_of_ops[index] != '\0')) {
-            index += 2;
-        }
-
-        if (order_of_ops[index] == 'X') {
-            cerr << "Operator not found\n";
-            exit(1);
-        }
-
-        return order_of_ops[++index]/10;
-    }
 
 // -------------------------------------------------------------------------------------
 
@@ -290,7 +299,7 @@ int main(int argc, char **argv) {
             int top_precedence = get_precedence(top);
             int current_precedence = get_precedence(current);
 
-            if ((top_precedence >= current_precedence) && (top != '(')) {
+            if (top_precedence >= current_precedence) {
                 reduce();
             }
 
@@ -302,22 +311,15 @@ int main(int argc, char **argv) {
     if (q == 1) {
         while (top_operator() != '$') {
             char top = top_operator();
-            switch (top) {
-                case '^':
-                case '-':
-                case '+':
-                case '/':
-                case '*':
-                case '&':
-                case '|':
-                    reduce();
-                    break;
-                case '(':
-                    cout << "Error -- unclosed paren\n";
-                    return -1;
-                case '@':
-                    reduce_negation();
-                    break;
+            if (top == '(') {
+                cerr << "Error -- unclosed paren\n";
+                exit(1);
+            }
+            else if (top == '@') {
+                reduce_negation();
+            }
+            else {
+                reduce();
             }
         }
         node* expression_tree = digit_stack.pop();
