@@ -45,8 +45,8 @@ open_paren.output = */
 
 // ---------------------------------
 
-
-int order_of_ops[26] = {
+const int ORDER_OF_OPS_SIZE = 28;
+int order_of_ops[ORDER_OF_OPS_SIZE] = {
     '@', 81,
     '^', 71,
     '*', 61,
@@ -56,6 +56,7 @@ int order_of_ops[26] = {
     '&', 41,
     '|', 31,
     'N', 21,
+    'V', 22,
     '(', 11,
     ')', 12,
     '$', 0,
@@ -86,13 +87,23 @@ class node {
     char value;
     node* left;
     node* right;
+    string variable;
 
 public:
+    node(int digit, char val, node* left, node* right, string var) {
+        this->digit = digit;
+        this->value = val;
+        this->left = left;
+        this->right = right;
+        this->variable = var;
+    }
+
     node(int digit, char val, node* left, node* right) {
         this->digit = digit;
         this->value = val;
         this->left = left;
         this->right = right;
+        this->variable = "";
     }
 
     node(char val, node* left, node* right) {
@@ -100,6 +111,15 @@ public:
         this->value = val;
         this->left = left;
         this->right = right;
+        this->variable = "";
+    }
+
+    node(string var) {
+        this->digit = -1;
+        this->value = 'V';
+        this->left = nullptr;
+        this->right = nullptr;
+        this->variable = var;
     }
 
     void print_postfix() {
@@ -111,6 +131,7 @@ public:
 
         switch (this->value) {
             case 'N':  cout << "Push " << this->digit << "\n"; break;
+            case 'V':  cout << "Push " << this->variable << "\n"; break;
             case '+':  cout << "Sum\n";   break;
             case '-':  cout << "Minus\n"; break;
             case '*':  cout << "Mul\n";   break;
@@ -197,6 +218,11 @@ void reduce_to_number(int num) {
     digit_stack.push(temp);
 }
 
+void reduce_to_variable(string var) {
+    node* temp = new node(var);
+    digit_stack.push(temp);
+}
+
 void reduce() {
     node* num2 = digit_stack.pop();
     node* num1 = digit_stack.pop();
@@ -257,9 +283,9 @@ int main(int argc, char **argv) {
                 continue;
             }
 
-            if (current >= '0' && current <= '9') {
+            if (current >= '0' && current <= '9') { // gobble nums
                 int num = 0;
-                while (current >= '0' && current <= '9') {
+                while (current >= '0' && current <= '9') { // must alter this to accept variable type
                     num = num * 10 + current - '0';
                     current = expression[++index];
                 }
@@ -271,6 +297,28 @@ int main(int argc, char **argv) {
                     reduce_negation();
                 }
             }
+            else if ((current >= 'A' && current <= 'Z') // gobble variables
+                || (current >= 'a' && current <= 'z') 
+                || (current == '_')) {
+                    string var;
+                    while ((current >= 'A' && current <= 'Z') // maybe this could be a helper function gobble_var()
+                        || (current >= 'a' && current <= 'z') 
+                        || (current == '_') 
+                        || (current >= '0' && current <= '9')) {
+                            var += current;
+                            current = expression[++index];
+                    }
+                    index--;
+                    reduce_to_variable(var);
+                    q = 1;
+                    
+                    while (top_operator() == '@') { 
+                        reduce_negation();
+                    }
+                    // gobble the variable until we either see something invalid or an op
+                    // store the variable as a node
+                    // the variable should be stored as a string
+                }
             else {
                 cerr << "Can't read " << current << endl;
                 exit(1);
@@ -329,5 +377,6 @@ int main(int argc, char **argv) {
         cerr << "Not a valid expression: " << expression << endl;
         exit(1);
     }
+
     return 0;
 }

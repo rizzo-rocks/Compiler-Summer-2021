@@ -104,5 +104,13 @@ if ! diff result expected13; then
   exit 1
 fi
 
+../a.out > result <<EOF
+dx1+dx2
+EOF
+if ! diff result expected14; then
+  echo error in test 14
+  exit 1
+fi
+
 rm result*
 echo Passed.
