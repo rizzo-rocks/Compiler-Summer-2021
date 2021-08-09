@@ -45,8 +45,9 @@ open_paren.output = */
 
 // ---------------------------------
 
-const int ORDER_OF_OPS_SIZE = 28;
+const int ORDER_OF_OPS_SIZE = 30;
 int order_of_ops[ORDER_OF_OPS_SIZE] = {
+    '=', 91,
     '@', 81,
     '^', 71,
     '*', 61,
@@ -132,16 +133,15 @@ public:
         switch (this->value) {
             case 'N':  cout << "Push " << this->digit << "\n"; break;
             case 'V':  cout << "Push " << this->variable << "\n"; break;
-            case '+':  cout << "Sum\n";   break;
-            case '-':  cout << "Minus\n"; break;
-            case '*':  cout << "Mul\n";   break;
-            case '/':  cout << "Div\n";   break;
-            case '@':  cout << "Neg\n";   break;
-            case '&':  cout << "And\n";   break;
-            case '|':  cout << "Or\n";    break;
-            case '^':  cout << "Exp\n";   break;
-            case 'E': break;
-            case 'F': break;
+            case '=':  cout << "Assign\n"; break; 
+            case '+':  cout << "Sum\n";    break;
+            case '-':  cout << "Minus\n";  break;
+            case '*':  cout << "Mul\n";    break;
+            case '/':  cout << "Div\n";    break;
+            case '@':  cout << "Neg\n";    break;
+            case '&':  cout << "And\n";    break;
+            case '|':  cout << "Or\n";     break;
+            case '^':  cout << "Exp\n";    break;
             default:  
                 cerr << "Unknown node " << this->value << "\n";  
                 exit(1);
