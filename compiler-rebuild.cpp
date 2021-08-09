@@ -283,16 +283,14 @@ int main(int argc, char **argv) {
                 continue;
             }
 
-            if (current >= '0' && current <= '9') { // gobble nums
+            if (isdigit(current)) { // gobble nums
                 int num = 0;
-                while (current >= '0' && current <= '9') { 
+                while (isdigit(current)) { 
                     num = num * 10 + current - '0';
                     current = expression[++index];
                 }
 
-                if ((current >= 'A' && current <= 'Z')
-                || (current >= 'a' && current <= 'z') 
-                || (current == '_')) {
+                if (isalpha(current) || current == '_') {
                     cerr << "Error -- improper variable format\n";
                     exit(1);
                 }
@@ -305,14 +303,9 @@ int main(int argc, char **argv) {
                     reduce_negation();
                 }
             }
-            else if ((current >= 'A' && current <= 'Z') // gobble variables
-                || (current >= 'a' && current <= 'z') 
-                || (current == '_')) {
+            else if (isalpha(current) || current == '_') { // gobble variables
                     string var;
-                    while ((current >= 'A' && current <= 'Z') // maybe this could be a helper function gobble_var()
-                        || (current >= 'a' && current <= 'z') 
-                        || (current == '_') 
-                        || (current >= '0' && current <= '9')) {
+                    while (isalnum(current) || current == '_') {
                             var += current;
                             current = expression[++index];
                     }
