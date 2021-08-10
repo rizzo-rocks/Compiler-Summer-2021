@@ -45,7 +45,7 @@ open_paren.output = */
 
 // ---------------------------------
 
-const int ORDER_OF_OPS_SIZE = 30;
+const int ORDER_OF_OPS_SIZE = 32;
 int order_of_ops[ORDER_OF_OPS_SIZE] = {
     '=', 91,
     '@', 81,
@@ -58,6 +58,7 @@ int order_of_ops[ORDER_OF_OPS_SIZE] = {
     '|', 31,
     'N', 21,
     'V', 22,
+    'A', 23,
     '(', 11,
     ')', 12,
     '$', 0,
@@ -133,6 +134,7 @@ public:
         switch (this->value) {
             case 'N':  cout << "Push " << this->digit << "\n"; break;
             case 'V':  cout << "Push " << this->variable << "\n"; break;
+            case 'A':  cout << "Push &" << this->variable << "\n"; break;
             case '=':  cout << "Assign\n"; break; 
             case '+':  cout << "Sum\n";    break;
             case '-':  cout << "Minus\n";  break;
@@ -150,6 +152,10 @@ public:
 
     char get_char() {
         return this->value;
+    }
+
+    void set_char(char c) {
+        this->value = c;
     }
 
     int get_digit() {
@@ -221,6 +227,18 @@ void reduce_to_number(int num) {
 void reduce_to_variable(string var) {
     node* temp = new node(var);
     digit_stack.push(temp);
+}
+
+void reduce_assignment() {
+    // pop 2 things off digit stack
+    // pop equals off op stack
+    // turn the variable node from type V to type A
+    node* num2 = digit_stack.pop();
+    node* num1 = digit_stack.pop();
+    num1->set_char('A');
+    node* result = new node('=', num1, num2);
+    digit_stack.push(result);
+    (void)pop_operator();
 }
 
 void reduce() {
@@ -363,6 +381,9 @@ int main(int argc, char **argv) {
             }
             else if (top == '@') {
                 reduce_negation();
+            }
+            else if (top == '=') {
+                reduce_assignment();
             }
             else {
                 reduce();

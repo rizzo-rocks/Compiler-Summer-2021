@@ -1,0 +1,5 @@
+Enter an expression:
+>> x=5
+Push &x
+Push 5
+Assign
