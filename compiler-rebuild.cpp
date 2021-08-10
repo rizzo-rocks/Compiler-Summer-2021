@@ -47,20 +47,20 @@ open_paren.output = */
 
 const int ORDER_OF_OPS_SIZE = 32;
 int order_of_ops[ORDER_OF_OPS_SIZE] = {
-    '=', 91,
-    '@', 81,
-    '^', 71,
-    '*', 61,
-    '/', 62,
-    '+', 51,
-    '-', 52,
-    '&', 41,
-    '|', 31,
-    'N', 21,
-    'V', 22,
-    'A', 23,
-    '(', 11,
-    ')', 12,
+    '@', 91,
+    '^', 81,
+    '*', 71,
+    '/', 72,
+    '+', 61,
+    '-', 62,
+    '&', 51,
+    '|', 41,
+    'N', 31,
+    'V', 32,
+    'A', 33,
+    '(', 21,
+    ')', 22,
+    '=', 11,
     '$', 0,
     'X', -1
 };
@@ -230,15 +230,29 @@ void reduce_to_variable(string var) {
 }
 
 void reduce_assignment() {
-    // pop 2 things off digit stack
-    // pop equals off op stack
-    // turn the variable node from type V to type A
-    node* num2 = digit_stack.pop();
-    node* num1 = digit_stack.pop();
+    node* num2 = digit_stack.pop(); // right operand
+    node* num1 = digit_stack.pop(); // left operand
+
     num1->set_char('A');
     node* result = new node('=', num1, num2);
     digit_stack.push(result);
     (void)pop_operator();
+
+    /* while (top_operator() != '$') {
+        num2 = num1;
+        num1 = digit_stack.pop();
+        num1->set_char('A');
+        result = new node('=', num1, num2);
+        digit_stack.push(result);
+        (void)pop_operator();
+    }*/
+
+    /*node* num2 = digit_stack.pop();
+    node* num1 = digit_stack.pop();
+    num1->set_char('A');
+    node* result = new node('=', num1, num2);
+    digit_stack.push(result);
+    (void)pop_operator();*/
 }
 
 void reduce() {
@@ -356,6 +370,14 @@ int main(int argc, char **argv) {
                     reduce_negation();
                 }
 
+                continue;
+            }
+            if (current == '=') {
+                // we will always have 1 right operand
+                // we might have many left operands
+                // # of equals is how many left operands we will have
+                q = 0;
+                push_operator(current);
                 continue;
             }
 
