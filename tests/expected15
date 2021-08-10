@@ -1,5 +1,5 @@
 Enter an expression:
->> x=5
+>> x=55
 Push &x
-Push 5
+Push 55
 Assign

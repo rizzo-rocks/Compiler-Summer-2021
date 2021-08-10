@@ -113,7 +113,7 @@ if ! diff result expected14; then
 fi
 
 ../a.out > result <<EOF
-x=5
+x=55
 EOF
 if ! diff result expected15; then
   echo error in test 15
