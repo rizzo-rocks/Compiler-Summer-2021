@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -45,8 +46,7 @@ open_paren.output = */
 
 // ---------------------------------
 
-const int ORDER_OF_OPS_SIZE = 32;
-int order_of_ops[ORDER_OF_OPS_SIZE] = {
+int order_of_ops[] = {
     '@', 91,
     '^', 81,
     '*', 71,
@@ -64,6 +64,8 @@ int order_of_ops[ORDER_OF_OPS_SIZE] = {
     '$', 0,
     'X', -1
 };
+
+const int ORDER_OF_OPS_SIZE  = (sizeof(order_of_ops) / sizeof(order_of_ops[0]))/2;
 
 // -------------------------------- precedence helper
 
@@ -237,22 +239,6 @@ void reduce_assignment() {
     node* result = new node('=', num1, num2);
     digit_stack.push(result);
     (void)pop_operator();
-
-    /* while (top_operator() != '$') {
-        num2 = num1;
-        num1 = digit_stack.pop();
-        num1->set_char('A');
-        result = new node('=', num1, num2);
-        digit_stack.push(result);
-        (void)pop_operator();
-    }*/
-
-    /*node* num2 = digit_stack.pop();
-    node* num1 = digit_stack.pop();
-    num1->set_char('A');
-    node* result = new node('=', num1, num2);
-    digit_stack.push(result);
-    (void)pop_operator();*/
 }
 
 void reduce() {
@@ -272,29 +258,19 @@ void reduce() {
     digit_stack.push(op);
 }
 
-// -------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------- interpretation 
 
-int main(int argc, char **argv) {
+void evaluate(string exp) {
     int index = 0;
-    string expression = "";
-
-    if (argc == 2) {
-        expression = argv[1];
-    }
-    else {
-        std::cout << "Enter an expression:\n";
-        cin >> expression;
-    }
-
-    char current = expression[index];
+    char current = exp[index];
 
     digit_stack.push(new node('$', nullptr, nullptr));    
     push_operator('$');
 
-    cout << ">> " << expression << "\n";
+    cout << ">> " << exp << "\n";
 
     int q = 0;
-    for (current = expression[index]; current != '\0'; current = expression[++index]) {
+    for (current = exp[index]; current != '\0'; current = exp[++index]) {
         if (current == ' ') {
             continue;
         }
@@ -319,7 +295,7 @@ int main(int argc, char **argv) {
                 int num = 0;
                 while (isdigit(current)) { 
                     num = num * 10 + current - '0';
-                    current = expression[++index];
+                    current = exp[++index];
                 }
 
                 if (isalpha(current) || current == '_') {
@@ -339,7 +315,7 @@ int main(int argc, char **argv) {
                     string var;
                     while (isalnum(current) || current == '_') {
                             var += current;
-                            current = expression[++index];
+                            current = exp[++index];
                     }
                     index--;
                     reduce_to_variable(var);
@@ -373,9 +349,6 @@ int main(int argc, char **argv) {
                 continue;
             }
             if (current == '=') {
-                // we will always have 1 right operand
-                // we might have many left operands
-                // # of equals is how many left operands we will have
                 q = 0;
                 push_operator(current);
                 continue;
@@ -415,8 +388,26 @@ int main(int argc, char **argv) {
         expression_tree->print_postfix();
     }
     else {
-        cerr << "Not a valid expression: " << expression << endl;
+        cerr << "Not a valid expression: " << exp << endl;
         exit(1);
+    }
+
+}
+
+// -------------------------------------------------------------------------------------
+
+int main(int argc, char **argv) {
+    string line; 
+
+    if (argc == 2) {
+        line = argv[1];\
+        evaluate(line);
+    }
+    else {
+        cout << "Enter an expression:\n";
+        while (getline(cin, line)) {
+            evaluate(line);
+        }
     }
 
     return 0;
