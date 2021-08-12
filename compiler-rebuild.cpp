@@ -380,7 +380,7 @@ void evaluate(string exp) {
                 reduce();
             }
         }
-        node* expression_tree = digit_stack.pop();
+        node* expression_tree = digit_stack.top();
         expression_tree->print_postfix();
     }
     else {
@@ -405,8 +405,10 @@ int main(int argc, char **argv) {
         cout << "Enter an expression:\n";
         while (getline(cin, line)) {
             evaluate(line);
+            (void)digit_stack.pop();
         }
     }
+
 
     return 0;
 }
