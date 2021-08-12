@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 
 using namespace std;
 
@@ -264,9 +263,6 @@ void evaluate(string exp) {
     int index = 0;
     char current = exp[index];
 
-    digit_stack.push(new node('$', nullptr, nullptr));    
-    push_operator('$');
-
     cout << ">> " << exp << "\n";
 
     int q = 0;
@@ -391,7 +387,6 @@ void evaluate(string exp) {
         cerr << "Not a valid expression: " << exp << endl;
         exit(1);
     }
-
 }
 
 // -------------------------------------------------------------------------------------
@@ -399,8 +394,11 @@ void evaluate(string exp) {
 int main(int argc, char **argv) {
     string line; 
 
+    digit_stack.push(new node('$', nullptr, nullptr));
+    push_operator('$');
+
     if (argc == 2) {
-        line = argv[1];\
+        line = argv[1];
         evaluate(line);
     }
     else {
