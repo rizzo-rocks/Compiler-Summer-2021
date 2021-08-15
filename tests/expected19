@@ -1,0 +1,5 @@
+Enter an expression:
+>> (y=5)
+Push &y
+Push 5
+Assign

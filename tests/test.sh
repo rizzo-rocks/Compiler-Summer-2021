@@ -145,5 +145,13 @@ if ! diff result expected18; then
   exit 1
 fi
 
+../a.out > result <<EOF
+(y=5)
+EOF
+if ! diff result expected19; then
+  echo error in test 19
+  exit 1
+fi
+
 rm result*
 echo Passed.
