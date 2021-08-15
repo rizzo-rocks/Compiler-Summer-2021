@@ -1,0 +1,9 @@
+Enter an expression:
+>> x=(y=5)+15
+Push &x
+Push y
+Push 5
+Assign
+Push 15
+Sum
+Assign
