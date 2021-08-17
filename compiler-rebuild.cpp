@@ -54,12 +54,11 @@ int order_of_ops[] = {
     '-', 62,
     '&', 51,
     '|', 41,
-    'N', 31,
-    'V', 32,
-    'A', 33,
-    '(', 21,
-    ')', 22,
-    '=', 11,
+    '=', 31,
+    'N', 21,
+    'V', 22,
+    '(', 11,
+    ')', 12,
     '$', 0,
     'X', -1
 };
@@ -125,29 +124,40 @@ public:
         this->variable = var;
     }
 
+    void print_equals() {
+        cout << "Push &" << this->left->variable << "\n";
+        right->print_postfix();
+        cout << "Assign\n";
+    }
+
     void print_postfix() {
-        if (this->left)
-            left->print_postfix(); 
+        if (this->value == '=') {   // special case is also base case
+            print_equals();
+            return;
+        }
+        else {
+            if (this->left)
+                left->print_postfix(); 
 
-        if (this->right) 
-            right->print_postfix();
+            if (this->right) 
+                right->print_postfix();
 
-        switch (this->value) {
-            case 'N':  cout << "Push " << this->digit << "\n"; break;
-            case 'V':  cout << "Push " << this->variable << "\n"; break;
-            case 'A':  cout << "Push &" << this->variable << "\n"; break;
-            case '=':  cout << "Assign\n"; break; 
-            case '+':  cout << "Sum\n";    break;
-            case '-':  cout << "Minus\n";  break;
-            case '*':  cout << "Mul\n";    break;
-            case '/':  cout << "Div\n";    break;
-            case '@':  cout << "Neg\n";    break;
-            case '&':  cout << "And\n";    break;
-            case '|':  cout << "Or\n";     break;
-            case '^':  cout << "Exp\n";    break;
-            default:  
-                cerr << "Unknown node " << this->value << "\n";  
-                exit(1);
+            switch (this->value) {
+                case 'N':  cout << "Push " << this->digit << "\n"; break;
+                case 'V':  cout << "Push " << this->variable << "\n"; break;
+                case '=':  cout << "Assign\n"; break; 
+                case '+':  cout << "Sum\n";    break;
+                case '-':  cout << "Minus\n";  break;
+                case '*':  cout << "Mul\n";    break;
+                case '/':  cout << "Div\n";    break;
+                case '@':  cout << "Neg\n";    break;
+                case '&':  cout << "And\n";    break;
+                case '|':  cout << "Or\n";     break;
+                case '^':  cout << "Exp\n";    break;
+                default:  
+                    cerr << "Unknown node " << this->value << "\n";  
+                    exit(1);
+            }
         }
     }
 
@@ -230,7 +240,7 @@ void reduce_to_variable(string var) {
     digit_stack.push(temp);
 }
 
-void reduce_assignment() {
+/*void reduce_assignment() {
     node* num2 = digit_stack.pop(); // right operand
     node* num1 = digit_stack.pop(); // left operand
 
@@ -238,7 +248,7 @@ void reduce_assignment() {
     node* result = new node('=', num1, num2);
     digit_stack.push(result);
     (void)pop_operator();
-}
+}*/
 
 void reduce() {
     node* num2 = digit_stack.pop();
@@ -344,17 +354,17 @@ void evaluate(string exp) {
 
                 continue;
             }
-            if (current == '=') {
+            /*if (current == '=') {
                 q = 0;
                 push_operator(current);
                 continue;
-            }
+            }*/
 
             char top = top_operator();
             int top_precedence = get_precedence(top);
             int current_precedence = get_precedence(current);
 
-            if (top_precedence >= current_precedence) {
+            if (top_precedence > current_precedence) { // shift the tie rather than reduce
                 reduce();
             }
 
@@ -373,9 +383,9 @@ void evaluate(string exp) {
             else if (top == '@') {
                 reduce_negation();
             }
-            else if (top == '=') {
+            /*else if (top == '=') {
                 reduce_assignment();
-            }
+            }*/
             else {
                 reduce();
             }
