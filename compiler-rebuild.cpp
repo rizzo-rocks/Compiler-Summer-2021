@@ -262,6 +262,24 @@ void reduce() {
     digit_stack.push(op);
 }
 
+void reduce_until_boundary(char lowerbound, char error) {
+    char top = top_operator();
+    while (top != lowerbound && top != error) {
+        if (top == '@') {
+            reduce_negation();
+        }
+        else {
+            reduce();
+        }
+        top = top_operator();
+    }
+    
+    if (top == error) {
+        cerr << "Syntax error\n";
+        exit(1);
+    }
+}
+
 // ---------------------------------------------------------------------- interpretation 
 
 void evaluate(string exp) {
@@ -333,15 +351,9 @@ void evaluate(string exp) {
         }
         else {
             if (current == ')') {
-                while (top_operator() != '(' && top_operator() != '$') {
-                    reduce();
-                }
+                reduce_until_boundary('(', '$');
 
-                if (top_operator() == '(') (void) pop_operator();
-                else if (top_operator() == '$') {
-                    cerr << "Error -- Paren never closed\n";
-                    exit(1);
-                }
+                (void) pop_operator();
 
                 while (top_operator() == '@') {
                     reduce_negation();
@@ -364,19 +376,8 @@ void evaluate(string exp) {
     }
 
     if (q == 1) {
-        while (top_operator() != '$') {
-            char top = top_operator();
-            if (top == '(') {
-                cerr << "Error -- unclosed paren\n";
-                exit(1);
-            }
-            else if (top == '@') {
-                reduce_negation();
-            }
-            else {
-                reduce();
-            }
-        }
+        reduce_until_boundary('$', '(');
+
         node* expression_tree = digit_stack.top();
         expression_tree->print_postfix();
     }
