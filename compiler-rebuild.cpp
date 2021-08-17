@@ -125,13 +125,19 @@ public:
     }
 
     void print_equals() {
-        cout << "Push &" << this->left->variable << "\n";
-        right->print_postfix();
-        cout << "Assign\n";
+        if (this->left->get_char() != 'V') {
+            cerr << "Error -- can only assign to a variable\n";
+            exit(1);
+        }
+        else {
+            cout << "Push &" << this->left->variable << "\n";
+            right->print_postfix();
+            cout << "Assign\n";
+        }
     }
 
     void print_postfix() {
-        if (this->value == '=') {   // special case is also base case
+        if (this->value == '=') { 
             print_equals();
             return;
         }
@@ -145,7 +151,6 @@ public:
             switch (this->value) {
                 case 'N':  cout << "Push " << this->digit << "\n"; break;
                 case 'V':  cout << "Push " << this->variable << "\n"; break;
-                case '=':  cout << "Assign\n"; break; 
                 case '+':  cout << "Sum\n";    break;
                 case '-':  cout << "Minus\n";  break;
                 case '*':  cout << "Mul\n";    break;
@@ -239,16 +244,6 @@ void reduce_to_variable(string var) {
     node* temp = new node(var);
     digit_stack.push(temp);
 }
-
-/*void reduce_assignment() {
-    node* num2 = digit_stack.pop(); // right operand
-    node* num1 = digit_stack.pop(); // left operand
-
-    num1->set_char('A');
-    node* result = new node('=', num1, num2);
-    digit_stack.push(result);
-    (void)pop_operator();
-}*/
 
 void reduce() {
     node* num2 = digit_stack.pop();
@@ -354,17 +349,12 @@ void evaluate(string exp) {
 
                 continue;
             }
-            /*if (current == '=') {
-                q = 0;
-                push_operator(current);
-                continue;
-            }*/
 
             char top = top_operator();
             int top_precedence = get_precedence(top);
             int current_precedence = get_precedence(current);
 
-            if (top_precedence > current_precedence) { // shift the tie rather than reduce
+            if (top_precedence > current_precedence) {
                 reduce();
             }
 
@@ -383,9 +373,6 @@ void evaluate(string exp) {
             else if (top == '@') {
                 reduce_negation();
             }
-            /*else if (top == '=') {
-                reduce_assignment();
-            }*/
             else {
                 reduce();
             }
@@ -418,7 +405,6 @@ int main(int argc, char **argv) {
             (void)digit_stack.pop();
         }
     }
-
 
     return 0;
 }
