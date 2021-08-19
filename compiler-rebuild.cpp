@@ -73,11 +73,11 @@ int get_precedence(char op) {
 // --------------------------------- variable address map and helpers
 
 int next_slot = 0;
-char variables[] = {};
+string variables[] = {};
 int addresses[] = {};
 int values[] = {};
 
-void add_address(char var, int val) {
+void add_address(string var, int val) {
     int base_address = 1000;    // offset in memory
 
     variables[next_slot] = var;
@@ -87,27 +87,42 @@ void add_address(char var, int val) {
     next_slot++;
 }
 
-int get_address_index(char var) {
+int get_address_index(string var) {
     int index = 0;
-    for (char current = variables[index]; current != var; current = variables[++index]) {
+    for (string current = variables[index]; current != var; current = variables[++index]) {
         // find the index matching var
     }
 
-    return index;
+    if (variables[index] == var) {
+        return index;
+    }
+    else {
+        return -1;
+    }
 }
 
-int get_address(char var) {
+int get_address(string var) {
     int index = get_address_index(var);
 
-    return addresses[index];
+    if (index != -1) {
+        return addresses[index];
+    }
+    else {
+        return -1;
+    }
 }
 
-int get_value(char var) {
+int get_value(string var) {
     int index = get_address_index(var);
 
-    return values[index];
+    if (index != -1) {
+        return values[index];
+    }
+    else {
+        return -1;
+    }
+    
 }
-
 
 // ---------------------------------
 
@@ -209,6 +224,16 @@ public:
         this->digit = digit;
     }
 
+    string get_var() {
+        if (this->value == 'V') {
+            return this->variable;
+        }
+        else {
+            cerr << "Can't call get_var on a non-variable type\n";
+            exit(1);
+        }
+    }
+
     void peek_left() {
         cout << this->left->get_char() << " char\n";
         cout << this->left->get_digit() << " digit\n";
@@ -279,6 +304,16 @@ void reduce() {
     char op_char = pop_operator();
 
     if (get_precedence(op_char) > 0) {
+
+        /*if (op_char == '=') {
+            if (get_address_index(num1->get_var()) == -1) {
+                add_address(num1->get_var(), num2->get_digit());
+            }
+            else {
+                // overwrite what's there?
+            }
+        }*/
+
         op = new node(op_char, num1, num2);
     }
     else {
