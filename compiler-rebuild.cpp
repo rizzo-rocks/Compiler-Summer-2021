@@ -31,19 +31,7 @@ public:
     }
 };
 
-// --------------------------------- converting op precedence array to struct
-
-/*struct operators {
-    char* output;
-    int precedence;
-    char op;
-}; 
-
-operators open_paren, closed_paren, negation, exp, mult, div, add, sub, _and, _or, num, end, not_found;
-
-open_paren.output = */
-
-// ---------------------------------
+// --------------------------------- precedence table and helper
 
 int order_of_ops[] = {
     '@', 91,
@@ -63,9 +51,9 @@ int order_of_ops[] = {
     'X', -1
 };
 
+/* Don't currently use
 const int ORDER_OF_OPS_SIZE  = (sizeof(order_of_ops) / sizeof(order_of_ops[0]))/2;
-
-// -------------------------------- precedence helper
+*/
 
 int get_precedence(char op) {
         int index = 0;
@@ -81,6 +69,45 @@ int get_precedence(char op) {
 
         return order_of_ops[++index]/10;
 }
+
+// --------------------------------- variable address map and helpers
+
+int next_slot = 0;
+char variables[] = {};
+int addresses[] = {};
+int values[] = {};
+
+void add_address(char var, int val) {
+    int base_address = 1000;    // offset in memory
+
+    variables[next_slot] = var;
+    addresses[next_slot] = base_address + next_slot;
+    values[next_slot] = val;
+
+    next_slot++;
+}
+
+int get_address_index(char var) {
+    int index = 0;
+    for (char current = variables[index]; current != var; current = variables[++index]) {
+        // find the index matching var
+    }
+
+    return index;
+}
+
+int get_address(char var) {
+    int index = get_address_index(var);
+
+    return addresses[index];
+}
+
+int get_value(char var) {
+    int index = get_address_index(var);
+
+    return values[index];
+}
+
 
 // ---------------------------------
 
