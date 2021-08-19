@@ -1,0 +1,7 @@
+Enter an expression:
+>> 1+2-3
+Push 1
+Push 2
+Sum
+Push 3
+Minus

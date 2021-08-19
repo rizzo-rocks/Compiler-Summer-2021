@@ -273,7 +273,7 @@ void reduce_until_boundary(char lowerbound, char error) {
         }
         top = top_operator();
     }
-    
+
     if (top == error) {
         cerr << "Syntax error\n";
         exit(1);
@@ -366,8 +366,13 @@ void evaluate(string exp) {
             int top_precedence = get_precedence(top);
             int current_precedence = get_precedence(current);
 
-            if (top_precedence > current_precedence) {
-                reduce();
+            if (top_precedence >= current_precedence) {
+                if (current == '=' && top == '=') {
+                    // is right to left
+                }
+                else {
+                    reduce();
+                }
             }
 
             push_operator(current);
