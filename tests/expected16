@@ -1,7 +1,7 @@
 Enter an expression:
 >> x=y=5
-Push &x
-Push &y
+Push 1000;&x
+Push 1001;&y
 Push 5
 Assign
 Assign

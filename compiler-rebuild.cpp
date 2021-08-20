@@ -73,16 +73,16 @@ int get_precedence(char op) {
 // --------------------------------- variable address map and helpers
 
 int next_slot = 0;
-string variables[] = {};
-int addresses[] = {};
-int values[] = {};
+string variables[20] = {};
+int addresses[20] = {};
+//int values[] = {}; // get corrupted after adding a new variable?
 
-void add_address(string var, int val) {
+void add_address(string var/*, int val*/) {
     int base_address = 1000;    // offset in memory
 
     variables[next_slot] = var;
     addresses[next_slot] = base_address + next_slot;
-    values[next_slot] = val;
+    //values[next_slot] = val;
 
     next_slot++;
 }
@@ -96,7 +96,7 @@ int get_address_index(string var) {
     if (variables[index] == var) {
         return index;
     }
-    else {
+    else { 
         return -1;
     }
 }
@@ -108,21 +108,23 @@ int get_address(string var) {
         return addresses[index];
     }
     else {
-        return -1;
+        cerr << "Error -- can't find address for the variable " << var << "\n";
+        exit(1);
     }
 }
 
-int get_value(string var) {
+/*int get_value_at_address(string var) {
     int index = get_address_index(var);
 
     if (index != -1) {
         return values[index];
     }
     else {
-        return -1;
+        cerr << "Error -- can't find value for the variable " << var << "\n";
+        exit(1);
     }
     
-}
+}*/
 
 // ---------------------------------
 
@@ -172,14 +174,14 @@ public:
             exit(1);
         }
         else {
-            cout << "Push &" << this->left->variable << "\n";
+            cout << "Push " << get_address(this->left->variable) << ";&" << this->left->variable << "\n";
             right->print_postfix();
             cout << "Assign\n";
         }
     }
 
     void print_postfix() {
-        if (this->value == '=') { 
+        if (this->get_char() == '=') { 
             print_equals();
             return;
         }
@@ -304,16 +306,6 @@ void reduce() {
     char op_char = pop_operator();
 
     if (get_precedence(op_char) > 0) {
-
-        /*if (op_char == '=') {
-            if (get_address_index(num1->get_var()) == -1) {
-                add_address(num1->get_var(), num2->get_digit());
-            }
-            else {
-                // overwrite what's there?
-            }
-        }*/
-
         op = new node(op_char, num1, num2);
     }
     else {
@@ -401,6 +393,7 @@ void evaluate(string exp) {
                     index--;
                     reduce_to_variable(var);
                     q = 1;
+                    add_address(var);
                     
                     while (top_operator() == '@') { 
                         reduce_negation();
@@ -415,7 +408,7 @@ void evaluate(string exp) {
             if (current == ')') {
                 reduce_until_boundary('(', '$');
 
-                (void) pop_operator();
+                (void)pop_operator();
 
                 while (top_operator() == '@') {
                     reduce_negation();
