@@ -75,14 +75,13 @@ int get_precedence(char op) {
 int next_slot = 0;
 string variables[20] = {};
 int addresses[20] = {};
-//int values[] = {}; // get corrupted after adding a new variable?
+int values[20] = {}; 
 
-void add_address(string var/*, int val*/) {
+void add_address(string var) {
     int base_address = 1000;    // offset in memory
 
     variables[next_slot] = var;
     addresses[next_slot] = base_address + next_slot;
-    //values[next_slot] = val;
 
     next_slot++;
 }
@@ -113,7 +112,7 @@ int get_address(string var) {
     }
 }
 
-/*int get_value_at_address(string var) {
+int get_value_at_address(string var) {
     int index = get_address_index(var);
 
     if (index != -1) {
@@ -123,8 +122,19 @@ int get_address(string var) {
         cerr << "Error -- can't find value for the variable " << var << "\n";
         exit(1);
     }
-    
-}*/
+}
+
+void add_value_at_address(string var, int val) {
+    int index = get_address_index(var);
+
+    if (index != -1) {
+        values[index] = val;
+    }
+    else {
+        cerr << "Error -- could not find " << var << " in addressbook\n";
+        exit(1);
+    }
+}
 
 // ---------------------------------
 
