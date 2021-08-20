@@ -186,7 +186,7 @@ public:
         else {
             cout << "Push " << get_address(this->left->variable) << ";&" << this->left->variable << "\n";
             right->print_postfix();
-            cout << "Assign\n";
+            cout << "Assign (" << get_address(this->left->variable) << ")\n";
         }
     }
 

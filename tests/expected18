@@ -3,7 +3,7 @@ Enter an expression:
 Push 1000;&x
 Push 1001;&y
 Push 5
-Assign
+Assign (1001)
 Push 15
 Sum
-Assign
+Assign (1000)
