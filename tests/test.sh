@@ -161,5 +161,46 @@ if ! diff result expected20; then
   exit 1
 fi
 
+../a.out > result <<EOF
+5*3/2
+EOF
+if ! diff result expected21; then
+  echo error in test 21
+  exit 1
+fi
+
+../a.out > result <<EOF
+2^-3*5
+EOF
+if ! diff result expected22; then
+  echo error in test 22
+  exit 1
+fi
+
+../a.out > result <<EOF
+5/2|2+5
+EOF
+if ! diff result expected23; then
+  echo error in test 23
+  exit 1
+fi
+
+../a.out > result <<EOF
+x=y=z=du&-2
+EOF
+if ! diff result expected24; then
+  echo error in test 24
+  exit 1
+fi
+
+../a.out > result <<EOF
+z=1
+w=2*e^(-(-z)^2)-w(-z)
+EOF
+if ! diff result expected24; then
+  echo error in test 24
+  exit 1
+fi
+
 rm result*
 echo Passed.

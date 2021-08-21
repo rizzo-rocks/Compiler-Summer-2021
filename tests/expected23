@@ -1,0 +1,9 @@
+Enter an expression:
+>> 5/2|2+5
+Push 5
+Push 2
+Div
+Push 2
+Push 5
+Sum
+Or
