@@ -195,10 +195,10 @@ fi
 
 ../a.out > result <<EOF
 z=1
-w=2*e^(-(-z)^2)-w(-z)
+x=y=z+3
 EOF
-if ! diff result expected24; then
-  echo error in test 24
+if ! diff result expected25; then
+  echo error in test 25
   exit 1
 fi
 
