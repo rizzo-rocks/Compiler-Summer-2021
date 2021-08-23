@@ -178,6 +178,16 @@ public:
         this->variable = var;
     }
 
+    /*int get_rvalue(node* rhs) {
+        if (this->left) {
+            left->get_rvalue(rhs);
+        }
+
+        if (this->right) {
+            right->get_rvalue(rhs);
+        }
+    }*/
+
     void print_equals() {
         if (this->left->get_char() != 'V') {
             cerr << "Error -- can only assign to a variable\n";
@@ -186,6 +196,9 @@ public:
         else {
             cout << "Push " << get_address(this->left->variable) << ";&" << this->left->variable << "\n";
             right->print_postfix();
+            /*if (this->right->get_char() == 'N') {   // for just the simple case: lvalue = rvalue
+                add_value_at_address(this->left->variable, this->right->get_digit());
+            }*/
             cout << "Assign (" << get_address(this->left->variable) << ")\n";
         }
     }

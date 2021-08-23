@@ -2,4 +2,12 @@ Enter an expression:
 >> z=1
 Push 1000;&z
 Push 1
-Assign (1000);
+Assign (1000)
+>> x=y=z+3
+Push 1001;&x
+Push 1002;&y
+Push (1000)
+Push 3
+Sum
+Assign (1002)
+Assign (1001)
