@@ -124,15 +124,30 @@ int get_value_at_address(string var) {
     }
 }
 
-void add_value_at_address(string var, int val) {
+void assign_at_address(string var) {
     int index = get_address_index(var);
 
     if (index != -1) {
-        values[index] = val;
+        values[index] = 1;
     }
     else {
         cerr << "Error -- could not find " << var << " in addressbook\n";
         exit(1);
+    }
+}
+
+int is_assigned(string var) {
+    int index = get_address_index(var);
+
+    if (index == -1) {
+        return 0;
+    }
+    else 
+    {
+        if (values[index]) {
+            return 1;
+        }
+        return 0;
     }
 }
 
@@ -178,16 +193,6 @@ public:
         this->variable = var;
     }
 
-    /*int get_rvalue(node* rhs) {
-        if (this->left) {
-            left->get_rvalue(rhs);
-        }
-
-        if (this->right) {
-            right->get_rvalue(rhs);
-        }
-    }*/
-
     void print_equals() {
         if (this->left->get_char() != 'V') {
             cerr << "Error -- can only assign to a variable\n";
@@ -196,9 +201,6 @@ public:
         else {
             cout << "Push " << get_address(this->left->variable) << ";&" << this->left->variable << "\n";
             right->print_postfix();
-            /*if (this->right->get_char() == 'N') {   // for just the simple case: lvalue = rvalue
-                add_value_at_address(this->left->variable, this->right->get_digit());
-            }*/
             cout << "Assign (" << get_address(this->left->variable) << ")\n";
         }
     }
@@ -217,7 +219,14 @@ public:
 
             switch (this->value) {
                 case 'N':  cout << "Push " << this->digit << "\n"; break;
-                case 'V':  cout << "Push " << this->variable << "\n"; break;
+                case 'V':  
+                    if (is_assigned(this->variable)) {
+                        cout << "Push (" << get_address(this->variable) << ")\n";
+                    }
+                    else {
+                        cout << "Push " << this->variable << "\n"; break;
+                    }
+                    break;
                 case '+':  cout << "Sum\n";    break;
                 case '-':  cout << "Minus\n";  break;
                 case '*':  cout << "Mul\n";    break;
@@ -416,7 +425,10 @@ void evaluate(string exp) {
                     index--;
                     reduce_to_variable(var);
                     q = 1;
-                    add_address(var);
+                    
+                    //if (!is_assigned(var)) { // throws a malloc_error but we need some way to check if the var is already in the addressbook so we don't duplicate
+                        add_address(var);
+                    //}
                     
                     while (top_operator() == '@') { 
                         reduce_negation();
@@ -445,6 +457,11 @@ void evaluate(string exp) {
             int current_precedence = get_precedence(current);
 
             if (top_precedence >= current_precedence) {
+                if (current == '=') {
+                    string last_var = digit_stack.top()->get_var();
+                    assign_at_address(last_var);
+                }
+                
                 if (current == '=' && top == '=') {
                     // is right to left
                 }
