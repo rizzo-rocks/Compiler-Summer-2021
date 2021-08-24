@@ -66,7 +66,7 @@ op operators[NUM_OPS] = {
     {51, "&", "And\n"},
     {41, "|", "Or\n"},
     {31, "=", ""}, 
-    {21, "N", ""},
+    {21, "N", "Push "},
     {22, "V", ""},
     {11, "(", ""},
     {12, ")", ""},
@@ -231,9 +231,9 @@ public:
     }
 
     void print_postfix() {
-        int op_id = get_op_ID(this->value);
+        int op_index = get_op_index(this->value);
 
-        if (op_id == 31) { 
+        if (operators[op_index].symbol == "=") { 
             print_equals();
             return;
         }
@@ -244,33 +244,22 @@ public:
             if (this->right) 
                 right->print_postfix();
 
-            switch (op_id) {
-                case 21:   cout << "Push " << this->digit << "\n"; break;
-                case 22:  
-                    if (is_assigned(this->variable)) {
-                        cout << "Push (" << get_address(this->variable) << ")\n";
-                    }
-                    else {
-                        cout << "Push " << this->variable << "\n"; break;
-                    }
-                    break;
-                case 61:    cout << "LT\n";      break;
-                case 62:    cout << "GT\n";      break;
-                case 63:    cout << "LTET\n";    break;
-                case 64:    cout << "GTET\n";    break;
-                case 66:    cout << "ET\n";      break;
-                case 65:    cout << "NET\n";     break;   
-                case 71:    cout << "Sum\n";     break;
-                case 72:    cout << "Minus\n";   break;
-                case 81:    cout << "Mul\n";     break;
-                case 82:    cout << "Div\n";     break;
-                case 101:   cout << "Neg\n";     break;
-                case 51:    cout << "And\n";     break;
-                case 41:    cout << "Or\n";      break;
-                case 91:    cout << "Exp\n";     break;
-                default:  
-                    cerr << "Unknown node " << this->value << "\n";  
-                    exit(1);
+            string op_symbol  = operators[op_index].symbol;
+            string op_print = operators[op_index].print_instructions;
+
+            if (op_symbol == "N") {
+                cout << op_print << this->digit << "\n";
+            }
+            else if (op_symbol == "V") {
+                if (is_assigned(this->variable)) {
+                    cout << "Push (" << get_address(this->variable) << ")\n";
+                }
+                else {
+                    cout << "Push " << this->variable << "\n";
+                }
+            }
+            else {
+                cout << operators[op_index].print_instructions;
             }
         }
     }
