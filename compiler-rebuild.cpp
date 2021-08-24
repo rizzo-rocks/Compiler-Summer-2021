@@ -2,13 +2,8 @@
 
 using namespace std;
 
-string get_string(char x)
+string get_string(char x)   // string builder bc I'm not good enough at char* yet
 {
-    // string class has a constructor
-    // that allows us to specify size of
-    // string as first parameter and character
-    // to be filled in given size as second
-    // parameter.
     string s(1, x);
 
     return s;  
@@ -122,7 +117,7 @@ void add_address(string var) {
 int get_address_index(string var) {
     int index = 0;
     for (string current = variables[index]; current != var; current = variables[++index]) {
-        // find the index matching var
+        // go until index found
     }
 
     if (variables[index] == var) {
@@ -144,18 +139,6 @@ int get_address(string var) {
         exit(1);
     }
 }
-
-/*int get_value_at_address(string var) {    // storing only whether it was assigned or not, not specific value
-    int index = get_address_index(var);
-
-    if (index != -1) {
-        return values[index];
-    }
-    else {
-        cerr << "Error -- can't find value for the variable " << var << "\n";
-        exit(1);
-    }
-}*/
 
 void assign_at_address(string var) {
     int index = get_address_index(var);
@@ -241,7 +224,7 @@ public:
     void print_postfix() {
         int op_id = get_op_ID(this->value);
 
-        if (/*this->get_char()*/ op_id == 31) { 
+        if (op_id == 31) { 
             print_equals();
             return;
         }
@@ -251,8 +234,6 @@ public:
 
             if (this->right) 
                 right->print_postfix();
-
-            //int op_id = get_op_ID(this->value);
 
             switch (op_id) {
                 case 21:   cout << "Push " << this->digit << "\n"; break;
@@ -289,10 +270,6 @@ public:
         return this->value;
     }
 
-    /*void set_char(string c) {                             don't currently use
-        this->value = c;
-    }*/
-
     int get_digit() {
         return this->digit;
     }
@@ -310,16 +287,6 @@ public:
             exit(1);
         }
     }
-
-    /*void peek_left() {                                    don't currently use
-        cout << this->left->get_char() << " char\n";
-        cout << this->left->get_digit() << " digit\n";
-    }
-
-    void peek_right() {
-        cout << this->right->get_char() << " char\n";
-        cout << this->right->get_digit() << " digit\n";
-    }*/
 };
 
 // ------------------------------- stack and stack helpers
@@ -348,12 +315,6 @@ string pop_operator() {
     operator_stack[--operator_index] = '\0';
     return top;
 }
-
-/*void print_op_stack() {                               don't currently use
-    for (int i = 0; i < OP_STACK_SIZE; i++) {
-        cout << operator_stack[i] << '\n';
-    }
-}*/
 
 // -------------------------------- reduction helpers
 
@@ -425,6 +386,7 @@ void statement_evaluate(string exp) {
 
     int q = 0;
     for (current = exp[index]; current != '\0'; current = exp[++index]) {
+
         if (current == ' ') {
             continue;
         }
@@ -502,36 +464,21 @@ void statement_evaluate(string exp) {
                 continue;
             }
 
-            /*if (current == '<' || current == '>') {     // gobble when we encounter possible 2-char op's
-
-            }*/
-            /*int num = 0;
-                while (isdigit(current)) { 
-                    num = num * 10 + current - '0';
-                    current = exp[++index];
-                }
-
-                if (isalpha(current) || current == '_') {
-                    cerr << "Error -- improper variable format\n";
-                    exit(1);
-                }
-
-                index--;
-                reduce_to_number(num);
-                q = 1; */
-            /*string current_str = "";
-            while (ispunct(current)) { // gobble operator
-                current_str += current;
+            string op_str = "";         
+            while (ispunct(current) && (current != '(' && current != ')')) {
+                op_str += get_string(current);
                 current = exp[++index];
+                
+                if (current == '-') {
+                    // pass negation off to state 0
+                    break;
+                }
             }
-
-            index--;   */ 
-            string current_str = get_string(current);
+            current = exp[--index];
 
             string top = top_operator();
             int top_precedence = get_precedence(top);
-            int current_precedence = get_precedence(current_str);
-            //int current_precedence = get_precedence(current);
+            int current_precedence = get_precedence(op_str);
 
             if (top_precedence >= current_precedence) {
                 if (current == '=') {
@@ -547,7 +494,7 @@ void statement_evaluate(string exp) {
                 }
             }
 
-            push_operator(current_str);
+            push_operator(op_str);
             q = 0;
         }
     }
