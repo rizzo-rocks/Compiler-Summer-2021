@@ -40,38 +40,47 @@ public:
     }
 };
 
-// --------------------------------- precedence table and helper
+// --------------------------------- precedence table and helpers
 
-/*struct op {               why won't you work??
+struct op {     
     int order_of_p;
-    //string symbol; don't need this bc it's in the node* ? not sure
+    string symbol;
     string print_instructions;
-} neg, exp, mult, div, add, minus, lt, gt, ltet, gtet, net, et, _and, _or, assign, num, var, open_paren, closed_paren, end, not_found;
+} neg, exp, mult, divide, add, subtract, lt, gt, ltet, gtet, net,
+    et, _and, _or, assign, num, var, open_paren, closed_paren, _end, not_found;
 
-struct op neg; neg.order_of_p = 101;   neg.symbol = "@";
-exp.order_of_p = 91;    exp.symbol = "^";
-mult.order_of_p = 81;   mult.symbol = "*";
-div.order_of_p = 82;    div.symbol = "/";
-add.order_of_p = 71;    add.symbol = "+";*/
-
-int order_of_ops[] = { 
-    101, 91,  81,  82,  71,  72,  61,  62,   63,    64,   65,   66,  51,  41,  31,  21,  22,  11,  12,  0,  -1
+const int NUM_OPS = 21;
+op operators[NUM_OPS] = {
+    {101, "@", "Neg\n"},
+    {91, "^", "Exp\n"},
+    {81, "*", "Mul\n"},
+    {82, "/", "Div\n"},
+    {71, "+", "Sum\n"},
+    {72, "-", "Minus\n"},
+    {61, "<", "LT\n"},
+    {62, ">", "GT\n"},
+    {63, "<=", "LTET\n"},
+    {64, ">=", "GTET\n"},
+    {65, "!=", "NET\n"},
+    {66, "==", "ET\n"},
+    {51, "&", "And\n"},
+    {41, "|", "Or\n"},
+    {31, "=", ""}, 
+    {21, "N", ""},
+    {22, "V", ""},
+    {11, "(", ""},
+    {12, ")", ""},
+    {0, "$", ""},
+    {-1, "X", ""}
 };
-string ops[] = {
-    "@", "^", "*", "/", "+", "-", "<", ">", "<=", ">=", "!=", "==", "&", "|", "=", "N", "V", "(", ")", "$", "X"
-};
-
-/* Don't currently use
-const int ORDER_OF_OPS_SIZE  = (sizeof(order_of_ops) / sizeof(order_of_ops[0]))/2;
-*/
 
 int get_op_index(string op) {
     int index = 0;
-    while (ops[index] != op) {
+    while (operators[index].symbol != op) {
         index++;
     }
 
-    if (ops[index] == "X") {
+    if (operators[index].symbol == "X") {
         cerr << "Operator not found\n";
         exit(1);
     }
@@ -82,13 +91,13 @@ int get_op_index(string op) {
 int get_op_ID(string op) {
     int index = get_op_index(op);
 
-    return order_of_ops[index];
+    return operators[index].order_of_p;
 }
 
 int get_precedence(string op) {
-        int index = get_op_index(op);
+    int index = get_op_index(op);
 
-        return order_of_ops[index]/10;
+    return operators[index].order_of_p/10;
 }
 
 // --------------------------------- variable address map and helpers
