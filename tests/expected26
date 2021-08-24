@@ -1,0 +1,9 @@
+Enter an expression:
+>> (1<2)&(8!=9)
+Push 1
+Push 2
+LT
+Push 8
+Push 9
+NET
+And

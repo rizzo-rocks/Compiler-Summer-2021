@@ -201,5 +201,29 @@ if ! diff result expected25; then
   exit 1
 fi
 
+../a.out > result <<EOF
+(1<2)&(8!=9)
+EOF
+if ! diff result expected26; then
+  echo error in test 26
+  exit 1
+fi
+
+../a.out > result <<EOF
+dx == dy
+EOF
+if ! diff result expected27; then
+  echo error in test 27
+  exit 1
+fi
+
+../a.out > result <<EOF
+y>x|45>=45
+EOF
+if ! diff result expected28; then
+  echo error in test 28
+  exit 1
+fi
+
 rm result*
 echo Passed.

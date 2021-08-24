@@ -2,7 +2,7 @@
 
 using namespace std;
 
-string get_string(char x)   // string builder bc I'm not good enough at char* yet
+string get_string(char x)
 {
     string s(1, x);
 
@@ -219,7 +219,7 @@ public:
     }
 
     void print_equals() {
-        if (this->left->get_char() != "V") {
+        if (this->left->get_symbol() != "V") {
             cerr << "Error -- can only assign to a variable\n";
             exit(1);
         }
@@ -232,8 +232,10 @@ public:
 
     void print_postfix() {
         int op_index = get_op_index(this->value);
+        string op_symbol  = operators[op_index].symbol;
+        string op_print = operators[op_index].print_instructions;
 
-        if (operators[op_index].symbol == "=") { 
+        if (op_symbol == "=") { 
             print_equals();
             return;
         }
@@ -244,8 +246,6 @@ public:
             if (this->right) 
                 right->print_postfix();
 
-            string op_symbol  = operators[op_index].symbol;
-            string op_print = operators[op_index].print_instructions;
 
             if (op_symbol == "N") {
                 cout << op_print << this->digit << "\n";
@@ -259,12 +259,12 @@ public:
                 }
             }
             else {
-                cout << operators[op_index].print_instructions;
+                cout << op_print;
             }
         }
     }
 
-    string get_char() {
+    string get_symbol() {
         return this->value;
     }
 

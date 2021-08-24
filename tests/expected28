@@ -1,0 +1,9 @@
+Enter an expression:
+>> y>x|45>=45
+Push y
+Push x
+GT
+Push 45
+Push 45
+GTET
+Or
