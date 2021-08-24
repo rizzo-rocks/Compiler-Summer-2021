@@ -194,8 +194,7 @@ if ! diff result expected24; then
 fi
 
 ../a.out > result <<EOF
-z=1
-x=y=z+3
+1<=2
 EOF
 if ! diff result expected25; then
   echo error in test 25
