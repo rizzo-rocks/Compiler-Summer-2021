@@ -2,6 +2,20 @@
 
 using namespace std;
 
+string get_string(char x)
+{
+    // string class has a constructor
+    // that allows us to specify size of
+    // string as first parameter and character
+    // to be filled in given size as second
+    // parameter.
+    string s(1, x);
+
+    return s;  
+}
+
+// ------------------------------------------------------------------------------
+
 template <typename T>
 class stack {
     T stuff[20] = {};
@@ -33,52 +47,71 @@ public:
 
 // --------------------------------- precedence table and helper
 
-int order_of_ops[] = {
-    '@', 91,
-    '^', 81,
-    '*', 71,
-    '/', 72,
-    '+', 61,
-    '-', 62,
-    '&', 51,
-    '|', 41,
-    '=', 31,
-    'N', 21,
-    'V', 22,
-    '(', 11,
-    ')', 12,
-    '$', 0,
-    'X', -1
+/*struct op {               why won't you work??
+    int order_of_p;
+    //string symbol; don't need this bc it's in the node* ? not sure
+    string print_instructions;
+} neg, exp, mult, div, add, minus, lt, gt, ltet, gtet, net, et, _and, _or, assign, num, var, open_paren, closed_paren, end, not_found;
+
+struct op neg; neg.order_of_p = 101;   neg.symbol = "@";
+exp.order_of_p = 91;    exp.symbol = "^";
+mult.order_of_p = 81;   mult.symbol = "*";
+div.order_of_p = 82;    div.symbol = "/";
+add.order_of_p = 71;    add.symbol = "+";*/
+
+int order_of_ops[] = { 
+    101, 91,  81,  82,  71,  72,  61,  62,   63,    64,   65,   66,  51,  41,  31,  21,  22,  11,  12,  0,  -1
+};
+string ops[] = {
+    "@", "^", "*", "/", "+", "-", "<", ">", "<=", ">=", "!=", "==", "&", "|", "=", "N", "V", "(", ")", "$", "X"
 };
 
 /* Don't currently use
 const int ORDER_OF_OPS_SIZE  = (sizeof(order_of_ops) / sizeof(order_of_ops[0]))/2;
 */
 
-int get_precedence(char op) {
-        int index = 0;
-        while ((order_of_ops[index] != op) 
-            && (order_of_ops[index] != '\0')) {
-            index += 2;
-        }
+int get_op_index(string op) {
+    int index = 0;
+    while (ops[index] != op) {
+        index++;
+    }
 
-        if (order_of_ops[index] == 'X') {
-            cerr << "Operator not found\n";
-            exit(1);
-        }
+    if (ops[index] == "X") {
+        cerr << "Operator not found\n";
+        exit(1);
+    }
 
-        return order_of_ops[++index]/10;
+    return index;
+}
+
+int get_op_ID(string op) {
+    int index = get_op_index(op);
+
+    return order_of_ops[index];
+}
+
+int get_precedence(string op) {
+        int index = get_op_index(op);
+
+        return order_of_ops[index]/10;
 }
 
 // --------------------------------- variable address map and helpers
 
 int next_slot = 0;
-string variables[20] = {};
-int addresses[20] = {};
-int values[20] = {}; 
+const int NUM_VARIABLES = 20;
+
+string variables[NUM_VARIABLES] = {};
+int addresses[NUM_VARIABLES] = {};
+int assigned[NUM_VARIABLES] = {}; 
 
 void add_address(string var) {
     int base_address = 1000;    // offset in memory
+
+    if (next_slot == NUM_VARIABLES) {
+        cerr << "Max variables reached\n";
+        exit(1);
+    }
 
     variables[next_slot] = var;
     addresses[next_slot] = base_address + next_slot;
@@ -112,7 +145,7 @@ int get_address(string var) {
     }
 }
 
-int get_value_at_address(string var) {
+/*int get_value_at_address(string var) {    // storing only whether it was assigned or not, not specific value
     int index = get_address_index(var);
 
     if (index != -1) {
@@ -122,13 +155,13 @@ int get_value_at_address(string var) {
         cerr << "Error -- can't find value for the variable " << var << "\n";
         exit(1);
     }
-}
+}*/
 
 void assign_at_address(string var) {
     int index = get_address_index(var);
 
     if (index != -1) {
-        values[index] = 1;
+        assigned[index] = 1;
     }
     else {
         cerr << "Error -- could not find " << var << " in addressbook\n";
@@ -144,7 +177,7 @@ int is_assigned(string var) {
     }
     else 
     {
-        if (values[index]) {
+        if (assigned[index]) {
             return 1;
         }
         return 0;
@@ -155,13 +188,13 @@ int is_assigned(string var) {
 
 class node {
     int digit;
-    char value;
+    string value;
     node* left;
     node* right;
     string variable;
 
 public:
-    node(int digit, char val, node* left, node* right, string var) {
+    node(int digit, string val, node* left, node* right, string var) {
         this->digit = digit;
         this->value = val;
         this->left = left;
@@ -169,7 +202,7 @@ public:
         this->variable = var;
     }
 
-    node(int digit, char val, node* left, node* right) {
+    node(int digit, string val, node* left, node* right) {
         this->digit = digit;
         this->value = val;
         this->left = left;
@@ -177,7 +210,7 @@ public:
         this->variable = "";
     }
 
-    node(char val, node* left, node* right) {
+    node(string val, node* left, node* right) {
         this->digit = -1;
         this->value = val;
         this->left = left;
@@ -187,14 +220,14 @@ public:
 
     node(string var) {
         this->digit = -1;
-        this->value = 'V';
+        this->value = "V";
         this->left = nullptr;
         this->right = nullptr;
         this->variable = var;
     }
 
     void print_equals() {
-        if (this->left->get_char() != 'V') {
+        if (this->left->get_char() != "V") {
             cerr << "Error -- can only assign to a variable\n";
             exit(1);
         }
@@ -206,7 +239,9 @@ public:
     }
 
     void print_postfix() {
-        if (this->get_char() == '=') { 
+        int op_id = get_op_ID(this->value);
+
+        if (/*this->get_char()*/ op_id == 31) { 
             print_equals();
             return;
         }
@@ -217,9 +252,11 @@ public:
             if (this->right) 
                 right->print_postfix();
 
-            switch (this->value) {
-                case 'N':  cout << "Push " << this->digit << "\n"; break;
-                case 'V':  
+            //int op_id = get_op_ID(this->value);
+
+            switch (op_id) {
+                case 21:   cout << "Push " << this->digit << "\n"; break;
+                case 22:  
                     if (is_assigned(this->variable)) {
                         cout << "Push (" << get_address(this->variable) << ")\n";
                     }
@@ -227,14 +264,20 @@ public:
                         cout << "Push " << this->variable << "\n"; break;
                     }
                     break;
-                case '+':  cout << "Sum\n";    break;
-                case '-':  cout << "Minus\n";  break;
-                case '*':  cout << "Mul\n";    break;
-                case '/':  cout << "Div\n";    break;
-                case '@':  cout << "Neg\n";    break;
-                case '&':  cout << "And\n";    break;
-                case '|':  cout << "Or\n";     break;
-                case '^':  cout << "Exp\n";    break;
+                case 61:    cout << "LT\n";      break;
+                case 62:    cout << "GT\n";      break;
+                case 63:    cout << "LTET\n";    break;
+                case 64:    cout << "GTET\n";    break;
+                case 66:    cout << "ET\n";      break;
+                case 65:    cout << "NET\n";     break;   
+                case 71:    cout << "Sum\n";     break;
+                case 72:    cout << "Minus\n";   break;
+                case 81:    cout << "Mul\n";     break;
+                case 82:    cout << "Div\n";     break;
+                case 101:   cout << "Neg\n";     break;
+                case 51:    cout << "And\n";     break;
+                case 41:    cout << "Or\n";      break;
+                case 91:    cout << "Exp\n";     break;
                 default:  
                     cerr << "Unknown node " << this->value << "\n";  
                     exit(1);
@@ -242,13 +285,13 @@ public:
         }
     }
 
-    char get_char() {
+    string get_char() {
         return this->value;
     }
 
-    void set_char(char c) {
+    /*void set_char(string c) {                             don't currently use
         this->value = c;
-    }
+    }*/
 
     int get_digit() {
         return this->digit;
@@ -259,7 +302,7 @@ public:
     }
 
     string get_var() {
-        if (this->value == 'V') {
+        if (this->value == "V") {
             return this->variable;
         }
         else {
@@ -268,7 +311,7 @@ public:
         }
     }
 
-    void peek_left() {
+    /*void peek_left() {                                    don't currently use
         cout << this->left->get_char() << " char\n";
         cout << this->left->get_digit() << " digit\n";
     }
@@ -276,7 +319,7 @@ public:
     void peek_right() {
         cout << this->right->get_char() << " char\n";
         cout << this->right->get_digit() << " digit\n";
-    }
+    }*/
 };
 
 // ------------------------------- stack and stack helpers
@@ -284,14 +327,14 @@ public:
 stack<node*> digit_stack;
 
 const int OP_STACK_SIZE = 10;
-char operator_stack[OP_STACK_SIZE] = {};
+string operator_stack[OP_STACK_SIZE] = {};
 int operator_index = 0; // points to the next available slot
 
-char top_operator() {
+string top_operator() {
     return operator_stack[operator_index-1];
 }
 
-void push_operator(char op) {
+void push_operator(string op) {
     operator_stack[operator_index++] = op;
 
     if (operator_index == OP_STACK_SIZE) {
@@ -300,29 +343,29 @@ void push_operator(char op) {
     }
 }
 
-char pop_operator() {
-    char top = top_operator();
+string pop_operator() {
+    string top = top_operator();
     operator_stack[--operator_index] = '\0';
     return top;
 }
 
-void print_op_stack() {
+/*void print_op_stack() {                               don't currently use
     for (int i = 0; i < OP_STACK_SIZE; i++) {
         cout << operator_stack[i] << '\n';
     }
-}
+}*/
 
 // -------------------------------- reduction helpers
 
 void reduce_negation() {
     node* num1 = digit_stack.pop();
-    node* result = new node('@', num1, nullptr);
+    node* result = new node("@", num1, nullptr);
     digit_stack.push(result);
     (void)pop_operator();
 }
 
 void reduce_to_number(int num) {
-    node* temp = new node(num, 'N', nullptr, nullptr);
+    node* temp = new node(num, "N", nullptr, nullptr);
     digit_stack.push(temp);
 }
 
@@ -335,7 +378,7 @@ void reduce() {
     node* num2 = digit_stack.pop();
     node* num1 = digit_stack.pop();
     node* op;
-    char op_char = pop_operator();
+    string op_char = pop_operator();
 
     if (get_precedence(op_char) > 0) {
         op = new node(op_char, num1, num2);
@@ -348,10 +391,10 @@ void reduce() {
     digit_stack.push(op);
 }
 
-void reduce_until_boundary(char lowerbound, char error) {
-    char top = top_operator();
+void reduce_until_boundary(string lowerbound, string error) {
+    string top = top_operator();
     while (top != lowerbound && top != error) {
-        if (top == '@') {
+        if (top == "@") {
             reduce_negation();
         }
         else {
@@ -366,9 +409,15 @@ void reduce_until_boundary(char lowerbound, char error) {
     }
 }
 
-// ---------------------------------------------------------------------- interpretation 
+// ---------------------------------------------------------------------- control flow evaluator
 
-void evaluate(string exp) {
+void control_flow_evaluate(string c_flow) {
+    int index = 0;
+}
+
+// ---------------------------------------------------------------------- statement evaluator
+
+void statement_evaluate(string exp) {
     int index = 0;
     char current = exp[index];
 
@@ -382,16 +431,17 @@ void evaluate(string exp) {
 
         if (q == 0) {
             if (current == '(') {
-                push_operator(current);
+                string current_str = get_string(current);
+                push_operator(current_str);
                 continue;
             }
 
             if (current == '-') {
-                if (top_operator() == '@') {
+                if (top_operator() == "@") {
                     (void)pop_operator();
                 }
                 else {
-                    push_operator('@');
+                    push_operator("@");
                 }
                 continue;
             }
@@ -412,7 +462,7 @@ void evaluate(string exp) {
                 reduce_to_number(num);
                 q = 1;
 
-                while (top_operator() == '@') { 
+                while (top_operator() == "@") { 
                     reduce_negation();
                 }
             }
@@ -430,7 +480,7 @@ void evaluate(string exp) {
                         add_address(var);
                     //}
                     
-                    while (top_operator() == '@') { 
+                    while (top_operator() == "@") { 
                         reduce_negation();
                     }
                 }
@@ -441,20 +491,47 @@ void evaluate(string exp) {
         }
         else {
             if (current == ')') {
-                reduce_until_boundary('(', '$');
+                reduce_until_boundary("(", "$");
 
                 (void)pop_operator();
 
-                while (top_operator() == '@') {
+                while (top_operator() == "@") {
                     reduce_negation();
                 }
 
                 continue;
             }
 
-            char top = top_operator();
+            /*if (current == '<' || current == '>') {     // gobble when we encounter possible 2-char op's
+
+            }*/
+            /*int num = 0;
+                while (isdigit(current)) { 
+                    num = num * 10 + current - '0';
+                    current = exp[++index];
+                }
+
+                if (isalpha(current) || current == '_') {
+                    cerr << "Error -- improper variable format\n";
+                    exit(1);
+                }
+
+                index--;
+                reduce_to_number(num);
+                q = 1; */
+            /*string current_str = "";
+            while (ispunct(current)) { // gobble operator
+                current_str += current;
+                current = exp[++index];
+            }
+
+            index--;   */ 
+            string current_str = get_string(current);
+
+            string top = top_operator();
             int top_precedence = get_precedence(top);
-            int current_precedence = get_precedence(current);
+            int current_precedence = get_precedence(current_str);
+            //int current_precedence = get_precedence(current);
 
             if (top_precedence >= current_precedence) {
                 if (current == '=') {
@@ -462,7 +539,7 @@ void evaluate(string exp) {
                     assign_at_address(last_var);
                 }
                 
-                if (current == '=' && top == '=') {
+                if (current == '=' && top == "=") {
                     // is right to left
                 }
                 else {
@@ -470,13 +547,13 @@ void evaluate(string exp) {
                 }
             }
 
-            push_operator(current);
+            push_operator(current_str);
             q = 0;
         }
     }
 
     if (q == 1) {
-        reduce_until_boundary('$', '(');
+        reduce_until_boundary("$", "(");
 
         node* expression_tree = digit_stack.top();
         expression_tree->print_postfix();
@@ -492,17 +569,17 @@ void evaluate(string exp) {
 int main(int argc, char **argv) {
     string line; 
 
-    digit_stack.push(new node('$', nullptr, nullptr));
-    push_operator('$');
+    digit_stack.push(new node("$", nullptr, nullptr));
+    push_operator("$");
 
     if (argc == 2) {
         line = argv[1];
-        evaluate(line);
+        statement_evaluate(line);
     }
     else {
         cout << "Enter an expression:\n";
         while (getline(cin, line)) {
-            evaluate(line);
+            statement_evaluate(line);
             (void)digit_stack.pop();
         }
     }
