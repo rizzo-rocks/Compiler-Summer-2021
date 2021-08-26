@@ -1,9 +1,9 @@
 Enter an expression:
 >> y>x|45>=45
-Push y
-Push x
+Push (1000)
+Push (1001)
 GT
 Push 45
 Push 45
-GTET
+GE
 Or

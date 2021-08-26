@@ -3,10 +3,10 @@ Enter an expression:
 Push 1000;&x
 Push 1001;&y
 Push 1002;&z
-Push du
+Push (1003)
 Push 2
 Neg
 And
-Assign (1002)
-Assign (1001)
-Assign (1000)
+Assign
+Assign
+Assign

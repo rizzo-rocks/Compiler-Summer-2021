@@ -5,5 +5,5 @@ Push 2
 LT
 Push 8
 Push 9
-NET
+NE
 And

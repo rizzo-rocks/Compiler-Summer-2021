@@ -3,8 +3,8 @@ Enter an expression:
 Push 1000;&x
 Push 1001;&y
 Push 5
-Assign (1001)
-Assign (1000)
+Assign
+Assign
 >> 1+2*3
 Push 1
 Push 2

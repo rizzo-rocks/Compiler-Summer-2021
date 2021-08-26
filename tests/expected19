@@ -2,4 +2,4 @@ Enter an expression:
 >> (y=5)
 Push 1000;&y
 Push 5
-Assign (1000)
+Assign

@@ -1,5 +1,5 @@
 Enter an expression:
 >> dx == dy
-Push dx
-Push dy
-ET
+Push (1000)
+Push (1001)
+EQ

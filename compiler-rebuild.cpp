@@ -59,10 +59,10 @@ op operators[NUM_OPS] = {
     {72, "-", "Minus\n"},
     {61, "<", "LT\n"},
     {62, ">", "GT\n"},
-    {63, "<=", "LTET\n"},
-    {64, ">=", "GTET\n"},
-    {65, "!=", "NET\n"},
-    {66, "==", "ET\n"},
+    {63, "<=", "LE\n"},  //LE
+    {64, ">=", "GE\n"},  //GE
+    {65, "!=", "NE\n"},  // NE
+    {66, "==", "EQ\n"},  // EQ
     {51, "&", "And\n"},
     {41, "|", "Or\n"},
     {31, "=", ""}, 
@@ -106,11 +106,11 @@ int next_slot = 0;
 const int NUM_VARIABLES = 20;
 
 string variables[NUM_VARIABLES] = {};
-int addresses[NUM_VARIABLES] = {};
-int assigned[NUM_VARIABLES] = {}; 
 
-void add_address(string var) {
-    int base_address = 1000;    // offset in memory
+// offset in memory
+const int base_address = 1000; 
+
+void declare_var(string var) {
 
     if (next_slot == NUM_VARIABLES) {
         cerr << "Max variables reached\n";
@@ -118,30 +118,23 @@ void add_address(string var) {
     }
 
     variables[next_slot] = var;
-    addresses[next_slot] = base_address + next_slot;
-
     next_slot++;
 }
 
-int get_address_index(string var) {
-    int index = 0;
-    for (string current = variables[index]; current != var; current = variables[++index]) {
+int get_var_index(string var) {
+    int index;
+    for (index =0 ; index < next_slot && variables[index] != var; index++) {
         // go until index found
     }
 
-    if (variables[index] == var) {
-        return index;
-    }
-    else { 
-        return -1;
-    }
+    return index == next_slot ? -1 : index;
 }
 
-int get_address(string var) {
-    int index = get_address_index(var);
+int get_var_address(string var) {
+    int index = get_var_index(var);
 
     if (index != -1) {
-        return addresses[index];
+        return base_address + index;
     }
     else {
         cerr << "Error -- can't find address for the variable " << var << "\n";
@@ -149,31 +142,8 @@ int get_address(string var) {
     }
 }
 
-void assign_at_address(string var) {
-    int index = get_address_index(var);
-
-    if (index != -1) {
-        assigned[index] = 1;
-    }
-    else {
-        cerr << "Error -- could not find " << var << " in addressbook\n";
-        exit(1);
-    }
-}
-
-int is_assigned(string var) {
-    int index = get_address_index(var);
-
-    if (index == -1) {
-        return 0;
-    }
-    else 
-    {
-        if (assigned[index]) {
-            return 1;
-        }
-        return 0;
-    }
+int is_var_assigned(string var) {
+    return get_var_index(var) != -1;
 }
 
 // ---------------------------------
@@ -224,9 +194,9 @@ public:
             exit(1);
         }
         else {
-            cout << "Push " << get_address(this->left->variable) << ";&" << this->left->variable << "\n";
+            cout << "Push " << get_var_address(this->left->variable) << ";&" << this->left->variable << "\n";
             right->print_postfix();
-            cout << "Assign (" << get_address(this->left->variable) << ")\n";
+            cout << "Assign\n";
         }
     }
 
@@ -251,8 +221,8 @@ public:
                 cout << op_print << this->digit << "\n";
             }
             else if (op_symbol == "V") {
-                if (is_assigned(this->variable)) {
-                    cout << "Push (" << get_address(this->variable) << ")\n";
+                if (is_var_assigned(this->variable)) {
+                    cout << "Push (" << get_var_address(this->variable) << ")\n";
                 }
                 else {
                     cout << "Push " << this->variable << "\n";
@@ -433,12 +403,11 @@ void statement_evaluate(string exp) {
                             current = exp[++index];
                     }
                     index--;
+                    if (!is_var_assigned(var)) {
+                        declare_var(var);
+                    }
                     reduce_to_variable(var);
                     q = 1;
-                    
-                    //if (!is_assigned(var)) { // throws a malloc_error but we need some way to check if the var is already in the addressbook so we don't duplicate
-                        add_address(var);
-                    //}
                     
                     while (top_operator() == "@") { 
                         reduce_negation();
@@ -450,6 +419,7 @@ void statement_evaluate(string exp) {
             }
         }
         else {
+
             if (current == ')') {
                 reduce_until_boundary("(", "$");
 
@@ -478,13 +448,8 @@ void statement_evaluate(string exp) {
             int top_precedence = get_precedence(top);
             int current_precedence = get_precedence(op_str);
 
-            if (top_precedence >= current_precedence) {
-                if (current == '=') {
-                    string last_var = digit_stack.top()->get_var();
-                    assign_at_address(last_var);
-                }
-                
-                if (current == '=' && top == "=") {
+            if (top_precedence >= current_precedence) {                
+                if (op_str == "=" && top == "=") {
                     // is right to left
                 }
                 else {
