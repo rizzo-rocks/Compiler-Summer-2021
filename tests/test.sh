@@ -225,5 +225,15 @@ if ! diff result expected28; then
   exit 1
 fi
 
+../a.out > result <<EOF
+if 1==true
+x=0
+endif
+EOF
+if ! diff result expected29; then
+  echo error in test 29
+  exit 1
+fi
+
 rm result*
 echo Passed.

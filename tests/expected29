@@ -1,0 +1,12 @@
+Enter an expression:
+>> if 1==true 
+IF_1
+Push 1
+Push true
+ET
+>> x=0
+Push 1000;&x
+Push 0
+Assign
+>> endif
+ENDIF_1

@@ -520,10 +520,10 @@ int main(int argc, char **argv) {
                     line_index--;
 
                     if (word == "if") {
-                        cout << "if\n";
+                        cout << "IF_" << get_string(if_label++) << "\n";
                     }
                     else if (word == "endif") {
-                        cout << "endif\n";
+                        cout << "ENDIF_" << get_string(--if_label) << "\n";
                     }
                     else if (word == "while") {
                         cout << "while\n";
