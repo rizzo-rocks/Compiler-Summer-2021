@@ -40,7 +40,7 @@ public:
     }
 };
 
-// --------------------------------- precedence table and helpers
+// --------------------------------- operator precedence table and helpers
 
 struct op {     
     int order_of_p;
@@ -59,10 +59,10 @@ op operators[NUM_OPS] = {
     {72, "-", "Minus\n"},
     {61, "<", "LT\n"},
     {62, ">", "GT\n"},
-    {63, "<=", "LE\n"},  //LE
-    {64, ">=", "GE\n"},  //GE
-    {65, "!=", "NE\n"},  // NE
-    {66, "==", "EQ\n"},  // EQ
+    {63, "<=", "LE\n"}, 
+    {64, ">=", "GE\n"},
+    {65, "!=", "NE\n"}, 
+    {66, "==", "EQ\n"}, 
     {51, "&", "And\n"},
     {41, "|", "Or\n"},
     {31, "=", ""}, 
@@ -88,6 +88,7 @@ int get_op_index(string op) {
     return index;
 }
 
+// change these helpers to accept the index of the operator in the struct 
 int get_op_ID(string op) {
     int index = get_op_index(op);
 
@@ -103,28 +104,23 @@ int get_precedence(string op) {
 // --------------------------------- variable address map and helpers
 
 int next_slot = 0;
+const int BASE_ADDRESS = 1000; // offset in memory
 const int NUM_VARIABLES = 20;
-
 string variables[NUM_VARIABLES] = {};
 
-// offset in memory
-const int base_address = 1000; 
-
 void declare_var(string var) {
-
     if (next_slot == NUM_VARIABLES) {
         cerr << "Max variables reached\n";
         exit(1);
     }
 
-    variables[next_slot] = var;
-    next_slot++;
+    variables[next_slot++] = var;
 }
 
 int get_var_index(string var) {
     int index;
     for (index =0 ; index < next_slot && variables[index] != var; index++) {
-        // go until index found
+        
     }
 
     return index == next_slot ? -1 : index;
@@ -134,7 +130,7 @@ int get_var_address(string var) {
     int index = get_var_index(var);
 
     if (index != -1) {
-        return base_address + index;
+        return BASE_ADDRESS + index;
     }
     else {
         cerr << "Error -- can't find address for the variable " << var << "\n";
@@ -261,19 +257,34 @@ public:
 
 stack<node*> digit_stack;
 
-const int OP_STACK_SIZE = 10;
-string operator_stack[OP_STACK_SIZE] = {};
+const int STACK_SIZE = 10;
+string operator_stack[STACK_SIZE] = {};
+string c_flow_stack[STACK_SIZE] = {};
 int operator_index = 0; // points to the next available slot
+int c_flow_index = 0;
 
 string top_operator() {
     return operator_stack[operator_index-1];
 }
 
+string top_c_flow() {
+    return c_flow_stack[c_flow_index-1];
+}
+
 void push_operator(string op) {
     operator_stack[operator_index++] = op;
 
-    if (operator_index == OP_STACK_SIZE) {
+    if (operator_index == STACK_SIZE) {
         cerr << "Operator stack full.\n";
+        exit(1);
+    }
+}
+
+void push_c_flow(string c_flow) {
+    c_flow_stack[c_flow_index++] = c_flow;
+
+    if (c_flow_index == STACK_SIZE) {
+        cerr << "Control flow stack full.\n";
         exit(1);
     }
 }
@@ -281,6 +292,12 @@ void push_operator(string op) {
 string pop_operator() {
     string top = top_operator();
     operator_stack[--operator_index] = '\0';
+    return top;
+}
+
+string pop_c_flow() {
+    string top = top_c_flow();
+    c_flow_stack[--c_flow_index] = '\0';
     return top;
 }
 
@@ -338,12 +355,6 @@ void reduce_until_boundary(string lowerbound, string error) {
     }
 }
 
-// ---------------------------------------------------------------------- control flow evaluator
-
-void control_flow_evaluate(string c_flow) {
-    int index = 0;
-}
-
 // ---------------------------------------------------------------------- statement evaluator
 
 void statement_evaluate(string exp) {
@@ -376,7 +387,7 @@ void statement_evaluate(string exp) {
                 continue;
             }
 
-            if (isdigit(current)) { // gobble nums
+            if (isdigit(current)) {
                 int num = 0;
                 while (isdigit(current)) { 
                     num = num * 10 + current - '0';
@@ -396,7 +407,7 @@ void statement_evaluate(string exp) {
                     reduce_negation();
                 }
             }
-            else if (isalpha(current) || current == '_') { // gobble variables
+            else if (isalpha(current) || current == '_') { 
                     string var;
                     while (isalnum(current) || current == '_') {
                             var += current;
@@ -478,9 +489,12 @@ void statement_evaluate(string exp) {
 
 int main(int argc, char **argv) {
     string line; 
+    int line_index;
+    char if_label, while_label = '1';
 
     digit_stack.push(new node("$", nullptr, nullptr));
     push_operator("$");
+    push_c_flow("$");
 
     if (argc == 2) {
         line = argv[1];
@@ -489,10 +503,45 @@ int main(int argc, char **argv) {
     else {
         cout << "Enter an expression:\n";
         while (getline(cin, line)) {
-            statement_evaluate(line);
+            char c;
+            line_index = 0;
+            string word = "";
+
+            for (c = line[line_index]; c != '\0'; c = line[++line_index]) {  
+                if (c == ' ' || c == '\t') { // gobbling whitespace here causes test 27 to fail but I think the lexer doesn't care about whitespace so i'm gobbling
+                    continue;
+                }
+
+                if (isalpha(c)) {
+                    while (isalpha(c)) {
+                        word += get_string(c);
+                        c = line[++line_index];
+                    }
+                    line_index--;
+
+                    if (word == "if") {
+                        cout << "if\n";
+                    }
+                    else if (word == "endif") {
+                        cout << "endif\n";
+                    }
+                    else if (word == "while") {
+                        cout << "while\n";
+                    }
+                    else if (word == "endwhile") {
+                        cout << "endwhile\n";
+                    }
+                    else {
+                        continue;
+                    }
+                }
+
+                word += get_string(c);
+            } 
+
+            statement_evaluate(word);
             (void)digit_stack.pop();
         }
-    }
-
+    }    
     return 0;
 }
