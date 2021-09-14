@@ -490,7 +490,8 @@ void statement_evaluate(string exp) {
 int main(int argc, char **argv) {
     string line; 
     int line_index;
-    char if_label, while_label = '1';
+    char if_label = '1';
+    char while_label = '1';
 
     digit_stack.push(new node("$", nullptr, nullptr));
     push_operator("$");
@@ -512,6 +513,32 @@ int main(int argc, char **argv) {
                     continue;
                 }
 
+                /**
+                 * @brief Blah
+                 * This is not going to work. IF and WHILE will get gobbled correctly, and reset to an empty word.
+                 * Then, whatever statement follows will accumulate into the word string, and then at the end is going to be the ENDIF or ENDWHILE
+                 * Example:
+                 * if x!1 endif   --->     "if", "x!=1endif"
+                 * 
+                 * There needs to be some way to identify valid tokens from the character stream as its being read in char for char
+                 * 
+                 * Identify valid words: "if", "endif", "while", "endwhile"
+                 * Put these in a table, give them values to identify them
+                 * When reading the char stream, 
+                 *  1. Is the current char the first char of one of my valid words?
+                 *  2. No -- it cannot be a keyword, build a statement string to send the statement evaluator
+                 *     Yes -- gobble, checking each char if it matches the next one in a valid word until invalid char is found
+                 *  
+                 * When do we know when it's time to stop building a word? When there's a space?
+                 * There need to be rules.
+                 * "if x!=1 endif" cannot be valid input, break it up to multiple lines
+                 * "if x!=1" --> we read the "if" until we hit the space, then we know whatever follows is the statement
+                 * The next lines will get gobbled and fed to statement evaluator like normal until there's an "endif"
+                 * If no "endif" gets found, throw error
+                 * The same logic applies for "while" and "endwhile", only the output will differ
+                 */
+
+
                 if (isalpha(c)) {
                     while (isalpha(c)) {
                         word += get_string(c);
@@ -520,20 +547,39 @@ int main(int argc, char **argv) {
                     line_index--;
 
                     if (word == "if") {
+                        push_c_flow("IF_" + get_string(if_label));
                         cout << "IF_" << get_string(if_label++) << "\n";
                     }
                     else if (word == "endif") {
-                        cout << "ENDIF_" << get_string(--if_label) << "\n";
+                        if (top_c_flow() == "IF_" + get_string(if_label-1)) {
+                            (void) pop_c_flow();
+                            cout << "ENDIF_" << get_string(--if_label) << "\n";
+                        }
+                        else {
+                            cerr << "Error -- endif without if\n";
+                            exit(1);
+                        }
                     }
                     else if (word == "while") {
-                        cout << "while\n";
+                        push_c_flow("WHILE_" + get_string(while_label));
+                        cout << "WHILE_" << get_string(while_label++) << "\n";
                     }
                     else if (word == "endwhile") {
-                        cout << "endwhile\n";
+                        if (top_c_flow() == "WHILE_" + get_string(while_label-1)) {
+                            (void) pop_c_flow();
+                            cout << "ENDWHILE_" << get_string(--while_label) << "\n";
+                        }
+                        else
+                        {
+                            cerr << "Error -- endwhile without while\n";
+                            exit(1);
+                        }
                     }
                     else {
                         continue;
                     }
+
+                    word = "";
                 }
 
                 word += get_string(c);
