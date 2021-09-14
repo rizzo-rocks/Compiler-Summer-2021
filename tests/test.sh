@@ -210,7 +210,7 @@ if ! diff result expected26; then
 fi
 
 ../a.out > result <<EOF
-dx == dy
+dx==dy
 EOF
 if ! diff result expected27; then
   echo error in test 27

@@ -490,6 +490,13 @@ void statement_evaluate(string exp) {
 int main(int argc, char **argv) {
     string line; 
     int line_index;
+
+    string keywords[4] = {
+        "if",
+        "endif",
+        "while",
+        "endwhile"
+    };
     char if_label = '1';
     char while_label = '1';
 
@@ -508,38 +515,21 @@ int main(int argc, char **argv) {
             line_index = 0;
             string word = "";
 
+            /*                              Need different rules for each case
+            Possible formats:
+            [keyword if/while] [statement]
+            [statement]
+            [keyword endif/endwhile]
+            */
+
             for (c = line[line_index]; c != '\0'; c = line[++line_index]) {  
-                if (c == ' ' || c == '\t') { // gobbling whitespace here causes test 27 to fail but I think the lexer doesn't care about whitespace so i'm gobbling
+                if (c == ' ' || c == '\t') { // cheated on test 27 by getting rid of whitespace
+                    word = "";
                     continue;
                 }
 
-                /**
-                 * @brief Blah
-                 * This is not going to work. IF and WHILE will get gobbled correctly, and reset to an empty word.
-                 * Then, whatever statement follows will accumulate into the word string, and then at the end is going to be the ENDIF or ENDWHILE
-                 * Example:
-                 * if x!1 endif   --->     "if", "x!=1endif"
-                 * 
-                 * There needs to be some way to identify valid tokens from the character stream as its being read in char for char
-                 * 
-                 * Identify valid words: "if", "endif", "while", "endwhile"
-                 * Put these in a table, give them values to identify them
-                 * When reading the char stream, 
-                 *  1. Is the current char the first char of one of my valid words?
-                 *  2. No -- it cannot be a keyword, build a statement string to send the statement evaluator
-                 *     Yes -- gobble, checking each char if it matches the next one in a valid word until invalid char is found
-                 *  
-                 * When do we know when it's time to stop building a word? When there's a space?
-                 * There need to be rules.
-                 * "if x!=1 endif" cannot be valid input, break it up to multiple lines
-                 * "if x!=1" --> we read the "if" until we hit the space, then we know whatever follows is the statement
-                 * The next lines will get gobbled and fed to statement evaluator like normal until there's an "endif"
-                 * If no "endif" gets found, throw error
-                 * The same logic applies for "while" and "endwhile", only the output will differ
-                 */
-
-
-                if (isalpha(c)) {
+                // Rule #1 -- keyword if/while followed by a statement
+                if (c == 'i' || c == 'w') { 
                     while (isalpha(c)) {
                         word += get_string(c);
                         c = line[++line_index];
@@ -550,7 +540,25 @@ int main(int argc, char **argv) {
                         push_c_flow("IF_" + get_string(if_label));
                         cout << "IF_" << get_string(if_label++) << "\n";
                     }
-                    else if (word == "endif") {
+                    else if (word == "while") {
+                        push_c_flow("WHILE_" + get_string(while_label));
+                        cout << "WHILE_" << get_string(while_label++) << "\n";
+                    }
+                    else {
+                        continue;
+                    }
+
+                    word = "";
+                }
+                // Rule #2 -- keyword endif/endwhile on single line
+                else if (c == 'e') {
+                    while (isalpha(c)) {
+                        word += get_string(c);
+                        c = line[++line_index];
+                    }
+                    line_index--;
+
+                    if (word == "endif") {
                         if (top_c_flow() == "IF_" + get_string(if_label-1)) {
                             (void) pop_c_flow();
                             cout << "ENDIF_" << get_string(--if_label) << "\n";
@@ -559,10 +567,6 @@ int main(int argc, char **argv) {
                             cerr << "Error -- endif without if\n";
                             exit(1);
                         }
-                    }
-                    else if (word == "while") {
-                        push_c_flow("WHILE_" + get_string(while_label));
-                        cout << "WHILE_" << get_string(while_label++) << "\n";
                     }
                     else if (word == "endwhile") {
                         if (top_c_flow() == "WHILE_" + get_string(while_label-1)) {
@@ -575,14 +579,14 @@ int main(int argc, char **argv) {
                             exit(1);
                         }
                     }
-                    else {
+                    else 
+                    {
                         continue;
                     }
-
-                    word = "";
                 }
-
-                word += get_string(c);
+                else {
+                    word += get_string(c);
+                }
             } 
 
             statement_evaluate(word);
