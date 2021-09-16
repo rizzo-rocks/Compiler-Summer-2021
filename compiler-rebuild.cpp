@@ -259,7 +259,7 @@ stack<node*> digit_stack;
 
 const int STACK_SIZE = 10;
 string operator_stack[STACK_SIZE] = {};
-string c_flow_stack[STACK_SIZE] = {};
+int c_flow_stack[STACK_SIZE] = {};
 int operator_index = 0; // points to the next available slot
 int c_flow_index = 0;
 
@@ -267,7 +267,7 @@ string top_operator() {
     return operator_stack[operator_index-1];
 }
 
-string top_c_flow() {
+int top_c_flow() {
     return c_flow_stack[c_flow_index-1];
 }
 
@@ -280,7 +280,7 @@ void push_operator(string op) {
     }
 }
 
-void push_c_flow(string c_flow) {
+void push_c_flow(int c_flow) {
     c_flow_stack[c_flow_index++] = c_flow;
 
     if (c_flow_index == STACK_SIZE) {
@@ -295,8 +295,8 @@ string pop_operator() {
     return top;
 }
 
-string pop_c_flow() {
-    string top = top_c_flow();
+int pop_c_flow() {
+    int top = top_c_flow();
     c_flow_stack[--c_flow_index] = '\0';
     return top;
 }
@@ -490,19 +490,21 @@ void statement_evaluate(string exp) {
 int main(int argc, char **argv) {
     string line; 
     int line_index;
-
-    string keywords[4] = {
+    
+    /*string keywords[4] = {    // don't really need this
         "if",
         "endif",
         "while",
         "endwhile"
-    };
-    char if_label = '1';
-    char while_label = '1';
+    };*/
+
+    int if_counter = 500; // IF statements will be represented by numbers [500, 599]
+    int while_counter = 600; // WHILE statements will be represented by numbers [600, 699]
+    bool rule_1_flag = false;
 
     digit_stack.push(new node("$", nullptr, nullptr));
     push_operator("$");
-    push_c_flow("$");
+    push_c_flow(0);
 
     if (argc == 2) {
         line = argv[1];
@@ -515,6 +517,9 @@ int main(int argc, char **argv) {
             line_index = 0;
             string word = "";
 
+            // state 1: read the keyword
+            // state 2: read the statement
+
             /*                              Need different rules for each case
             Possible formats:
             [keyword if/while] [statement]
@@ -523,7 +528,7 @@ int main(int argc, char **argv) {
             */
 
             for (c = line[line_index]; c != '\0'; c = line[++line_index]) {  
-                if (c == ' ' || c == '\t') { // cheated on test 27 by getting rid of whitespace
+                if (c == ' ' || c == '\t') {
                     word = "";
                     continue;
                 }
@@ -537,16 +542,22 @@ int main(int argc, char **argv) {
                     line_index--;
 
                     if (word == "if") {
-                        push_c_flow("IF_" + get_string(if_label));
-                        cout << "IF_" << get_string(if_label++) << "\n";
+                        //push_c_flow("IF_" + get_string(if_label));
+                        push_c_flow(if_counter++);
+                        cout << "IF\n";
+                        //cout << "IF_" << get_string(if_label++) << "\n";
                     }
                     else if (word == "while") {
-                        push_c_flow("WHILE_" + get_string(while_label));
-                        cout << "WHILE_" << get_string(while_label++) << "\n";
+                        //push_c_flow("WHILE_" + get_string(while_label));
+                        push_c_flow(while_counter++);
+                        cout << "WHILE\n";
+                        //cout << "WHILE_" << get_string(while_label++) << "\n";
                     }
                     else {
                         continue;
                     }
+
+                    rule_1_flag = true;
 
                     word = "";
                 }
@@ -559,9 +570,11 @@ int main(int argc, char **argv) {
                     line_index--;
 
                     if (word == "endif") {
-                        if (top_c_flow() == "IF_" + get_string(if_label-1)) {
+                        //if (top_c_flow() == "IF_" + get_string(if_label-1)) {
+                        if (top_c_flow() == if_counter-1) {   
                             (void) pop_c_flow();
-                            cout << "ENDIF_" << get_string(--if_label) << "\n";
+                            cout << "ENDIF\n";
+                            //cout << "ENDIF_" << get_string(--if_label) << "\n";
                         }
                         else {
                             cerr << "Error -- endif without if\n";
@@ -569,9 +582,11 @@ int main(int argc, char **argv) {
                         }
                     }
                     else if (word == "endwhile") {
-                        if (top_c_flow() == "WHILE_" + get_string(while_label-1)) {
+                        //if (top_c_flow() == "WHILE_" + get_string(while_label-1)) {
+                        if (top_c_flow() == while_counter-1) {    
                             (void) pop_c_flow();
-                            cout << "ENDWHILE_" << get_string(--while_label) << "\n";
+                            cout << "ENDWHILE\n";
+                            //cout << "ENDWHILE_" << get_string(--while_label) << "\n";
                         }
                         else
                         {
@@ -583,14 +598,23 @@ int main(int argc, char **argv) {
                     {
                         continue;
                     }
+
+                    word = "";
                 }
+                // Rule #3 -- A normal expression to be read by the statement evaluator
                 else {
                     word += get_string(c);
                 }
             } 
 
+            if (word.length() == 0) {
+                return 0;
+            }
+
             statement_evaluate(word);
             (void)digit_stack.pop();
+
+            if (rule_1_flag) {cout << "BEQ\n"; rule_1_flag = false;}
         }
     }    
     return 0;

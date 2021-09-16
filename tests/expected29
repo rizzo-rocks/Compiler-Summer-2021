@@ -1,12 +1,12 @@
 Enter an expression:
->> if 1==true 
-IF_1
+IF
+>> 1==true
 Push 1
-Push true
-ET
+Push (1000)
+EQ
+BEQ
 >> x=0
-Push 1000;&x
+Push 1001;&x
 Push 0
 Assign
->> endif
-ENDIF_1
+ENDIF

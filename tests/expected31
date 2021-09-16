@@ -1,0 +1,22 @@
+Enter an expression:
+IF
+>> 1==2
+Push 1
+Push 2
+EQ
+BEQ
+IF
+>> 3==4
+Push 3
+Push 4
+EQ
+BEQ
+ENDIF
+IF
+>> 5==6
+Push 5
+Push 6
+EQ
+BEQ
+ENDIF
+ENDIF
