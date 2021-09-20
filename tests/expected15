@@ -3,3 +3,4 @@ Enter an expression:
 Push 1000;&x
 Push 55
 Assign
+Pop

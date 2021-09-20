@@ -1,15 +1,13 @@
 Enter an expression:
-IF
->> 1==2
+>>  1==2
 Push 1
 Push 2
 EQ
-BEQ
-IF
->> 3==4
+BRZ B500 ;IF
+>>  3==4
 Push 3
 Push 4
 EQ
-BEQ
-ENDIF
-ENDIF
+BRZ B501 ;IF
+B501: ;ENDIF
+B500: ;ENDIF

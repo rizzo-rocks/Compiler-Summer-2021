@@ -5,3 +5,4 @@ Push 2
 Mul
 Push 3
 Exp
+Pop

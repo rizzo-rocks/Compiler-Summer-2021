@@ -490,17 +490,9 @@ void statement_evaluate(string exp) {
 int main(int argc, char **argv) {
     string line; 
     int line_index;
-    
-    /*string keywords[4] = {    // don't really need this
-        "if",
-        "endif",
-        "while",
-        "endwhile"
-    };*/
 
     int if_counter = 500; // IF statements will be represented by numbers [500, 599]
     int while_counter = 600; // WHILE statements will be represented by numbers [600, 699]
-    bool rule_1_flag = false;
 
     digit_stack.push(new node("$", nullptr, nullptr));
     push_operator("$");
@@ -512,109 +504,75 @@ int main(int argc, char **argv) {
     }
     else {
         cout << "Enter an expression:\n";
-        while (getline(cin, line)) {
+    
+        for (;;) {
+            top:
+            if (!getline(cin, line)) break; 
+
             char c;
             line_index = 0;
             string word = "";
 
-            // state 1: read the keyword
-            // state 2: read the statement
 
-            /*                              Need different rules for each case
-            Possible formats:
-            [keyword if/while] [statement]
-            [statement]
-            [keyword endif/endwhile]
-            */
+            for (;;) { 
+                c = line[line_index];
+                if (c == '\0') goto top;
 
-            for (c = line[line_index]; c != '\0'; c = line[++line_index]) {  
-                if (c == ' ' || c == '\t') {
-                    word = "";
+                if (isspace(c)) {
+                    line_index++;
                     continue;
                 }
 
-                // Rule #1 -- keyword if/while followed by a statement
-                if (c == 'i' || c == 'w') { 
-                    while (isalpha(c)) {
-                        word += get_string(c);
-                        c = line[++line_index];
-                    }
-                    line_index--;
-
-                    if (word == "if") {
-                        //push_c_flow("IF_" + get_string(if_label));
-                        push_c_flow(if_counter++);
-                        cout << "IF\n";
-                        //cout << "IF_" << get_string(if_label++) << "\n";
-                    }
-                    else if (word == "while") {
-                        //push_c_flow("WHILE_" + get_string(while_label));
-                        push_c_flow(while_counter++);
-                        cout << "WHILE\n";
-                        //cout << "WHILE_" << get_string(while_label++) << "\n";
-                    }
-                    else {
-                        continue;
-                    }
-
-                    rule_1_flag = true;
-
-                    word = "";
-                }
-                // Rule #2 -- keyword endif/endwhile on single line
-                else if (c == 'e') {
-                    while (isalpha(c)) {
-                        word += get_string(c);
-                        c = line[++line_index];
-                    }
-                    line_index--;
-
-                    if (word == "endif") {
-                        //if (top_c_flow() == "IF_" + get_string(if_label-1)) {
-                        if (top_c_flow() == if_counter-1) {   
-                            (void) pop_c_flow();
-                            cout << "ENDIF\n";
-                            //cout << "ENDIF_" << get_string(--if_label) << "\n";
-                        }
-                        else {
-                            cerr << "Error -- endif without if\n";
-                            exit(1);
-                        }
-                    }
-                    else if (word == "endwhile") {
-                        //if (top_c_flow() == "WHILE_" + get_string(while_label-1)) {
-                        if (top_c_flow() == while_counter-1) {    
-                            (void) pop_c_flow();
-                            cout << "ENDWHILE\n";
-                            //cout << "ENDWHILE_" << get_string(--while_label) << "\n";
-                        }
-                        else
-                        {
-                            cerr << "Error -- endwhile without while\n";
-                            exit(1);
-                        }
-                    }
-                    else 
-                    {
-                        continue;
-                    }
-
-                    word = "";
-                }
-                // Rule #3 -- A normal expression to be read by the statement evaluator
-                else {
-                    word += get_string(c);
-                }
-            } 
-
-            if (word.length() == 0) {
-                return 0;
+                break;
             }
 
-            statement_evaluate(word);
-            (void)digit_stack.pop();
+            while (isalpha(c)) {
+                word += get_string(c);
+                c = line[++line_index];
+            }
 
-            if (rule_1_flag) {cout << "BEQ\n"; rule_1_flag = false;}
+            if (word == "if") {
+                push_c_flow(if_counter);
+                statement_evaluate(line.substr(line_index));
+                cout << "BRZ B" << if_counter++ << " ;IF\n";    
+                continue;
+            }
+            else if (word == "while") {
+                push_c_flow(while_counter);
+                cout << "T" << while_counter << ": ;WHILE\n";
+
+                statement_evaluate(line.substr(line_index));
+                cout << "BRZ B" << while_counter++ << "\n";   
+                continue;        
+            }
+            else if (word == "endif") {
+                if (top_c_flow() >= 500 && top_c_flow() < 599) {   
+                    cout << "B" << top_c_flow() << ": ;ENDIF\n";
+                    (void) pop_c_flow();
+                    continue;
+                }
+                else {
+                    cerr << "Error -- endif without if\n";
+                    exit(1);
+                }
+            }
+            else if (word == "endwhile") {
+                if (top_c_flow() >= 600 && top_c_flow() < 699) {    
+                    cout << "JMP T" << top_c_flow() << " ;ENDWHILE\n";
+                    cout << "B" << top_c_flow() << ":\n";
+                    (void) pop_c_flow();
+                    continue;
+                }
+                else
+                {
+                    cerr << "Error -- endwhile without while\n";
+                    exit(1);
+                }
+            }
+
+            statement_evaluate(line);
+            (void)digit_stack.pop();
+            cout << "Pop\n";
         }
     }    
     return 0;

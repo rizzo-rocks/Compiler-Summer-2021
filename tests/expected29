@@ -1,12 +1,12 @@
 Enter an expression:
-IF
->> 1==true
+>>  1==true
 Push 1
 Push (1000)
 EQ
-BEQ
+BRZ B500 ;IF
 >> x=0
 Push 1001;&x
 Push 0
 Assign
-ENDIF
+Pop
+B500: ;ENDIF

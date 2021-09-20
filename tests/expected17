@@ -5,9 +5,11 @@ Push 1001;&y
 Push 5
 Assign
 Assign
+Pop
 >> 1+2*3
 Push 1
 Push 2
 Push 3
 Mul
 Sum
+Pop

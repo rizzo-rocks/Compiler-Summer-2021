@@ -5,3 +5,4 @@ Push 3
 Mul
 Push 2
 Div
+Pop

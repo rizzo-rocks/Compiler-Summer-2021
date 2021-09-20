@@ -7,3 +7,4 @@ Push 8
 Push 9
 NE
 And
+Pop

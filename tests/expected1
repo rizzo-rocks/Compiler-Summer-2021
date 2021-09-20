@@ -3,3 +3,4 @@ Enter an expression:
 Push 22
 Push 33
 Sum
+Pop
