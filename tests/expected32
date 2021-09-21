@@ -1,0 +1,14 @@
+Enter an expression:
+T600: ;WHILE
+>>  1==true
+Push 1
+Push (1000)
+EQ
+BRZ B600
+>> x=0
+Push 1001;&x
+Push 0
+Assign
+Pop
+JMP T600
+B600: ;ENDWHILE

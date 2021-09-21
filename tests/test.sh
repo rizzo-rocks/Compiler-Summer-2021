@@ -259,5 +259,39 @@ if ! diff result expected31; then
   exit 1
 fi
 
+../a.out > result <<EOF
+while 1==true
+x=0
+endwhile 
+EOF
+if ! diff result expected32; then
+  echo error in test 32
+  exit 1
+fi
+
+../a.out > result <<EOF
+while 1==2
+  while 3==4
+  endwhile
+endwhile
+EOF
+if ! diff result expected33; then
+  echo error in test 33
+  exit 1
+fi
+
+../a.out > result <<EOF
+while 1==2
+  while 3==4
+  endwhile
+  while 5==6
+  endwhile
+endwhile  
+EOF
+if ! diff result expected34; then
+  echo error in test 34
+  exit 1
+fi
+
 rm result*
 echo Passed.

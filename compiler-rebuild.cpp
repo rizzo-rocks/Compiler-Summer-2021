@@ -558,8 +558,8 @@ int main(int argc, char **argv) {
             }
             else if (word == "endwhile") {
                 if (top_c_flow() >= 600 && top_c_flow() < 699) {    
-                    cout << "JMP T" << top_c_flow() << " ;ENDWHILE\n";
-                    cout << "B" << top_c_flow() << ":\n";
+                    cout << "JMP T" << top_c_flow() << "\n";
+                    cout << "B" << top_c_flow() << ": ;ENDWHILE\n";
                     (void) pop_c_flow();
                     continue;
                 }
