@@ -1,0 +1,6 @@
+Enter an expression:
+>> 22+33
+Push 22
+Push 33
+Sum
+Pop

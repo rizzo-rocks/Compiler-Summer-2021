@@ -1,6 +1,11 @@
 #include <iostream>
+#include <fstream>
 
-using namespace std;
+//using namespace std;
+using std::cout;
+using std::cin;
+using std::string;
+using std::cerr;
 
 string get_string(char x)
 {
@@ -330,7 +335,7 @@ void reduce() {
         op = new node(op_char, num1, num2);
     }
     else {
-        cerr << "Reduce: Cannot reduce with type " << op_char << endl;
+        cerr << "Reduce: Cannot reduce with type " << op_char << "\n";
         exit(1);
     }
 
@@ -425,7 +430,7 @@ void statement_evaluate(string exp) {
                     }
                 }
             else {
-                cerr << "Can't read " << current << endl;
+                cerr << "Can't read " << current << "\n";
                 exit(1);
             }
         }
@@ -480,7 +485,7 @@ void statement_evaluate(string exp) {
         expression_tree->print_postfix();
     }
     else {
-        cerr << "Not a valid expression: " << exp << endl;
+        cerr << "Not a valid expression: " << exp << "\n";
         exit(1);
     }
 }
@@ -534,7 +539,7 @@ int main(int argc, char **argv) {
             if (word == "if") {
                 push_c_flow(if_counter);
                 statement_evaluate(line.substr(line_index));
-                cout << "BRZ B" << if_counter++ << " ;IF\n";    
+                cout << "BRZ B" << if_counter++ << " ;IF\n";  
                 continue;
             }
             else if (word == "while") {
@@ -542,7 +547,7 @@ int main(int argc, char **argv) {
                 cout << "T" << while_counter << ": ;WHILE\n";
 
                 statement_evaluate(line.substr(line_index));
-                cout << "BRZ B" << while_counter++ << "\n";   
+                cout << "BRZ B" << while_counter++ << "\n";
                 continue;        
             }
             else if (word == "endif") {
