@@ -1,6 +1,9 @@
+========== Compiler ==========
 Enter an expression:
 >> 123<=456
 Push 123
 Push 456
 LE
 Pop
+
+========== Interpreter ==========

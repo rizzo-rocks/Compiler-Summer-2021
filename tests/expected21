@@ -1,3 +1,4 @@
+========== Compiler ==========
 Enter an expression:
 >> 5*3/2
 Push 5
@@ -6,3 +7,5 @@ Mul
 Push 2
 Div
 Pop
+
+========== Interpreter ==========

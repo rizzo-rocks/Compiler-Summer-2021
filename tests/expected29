@@ -1,3 +1,4 @@
+========== Compiler ==========
 Enter an expression:
 >>  1==true
 Push 1
@@ -10,3 +11,5 @@ Push 0
 Assign
 Pop
 B500: ;ENDIF
+
+========== Interpreter ==========

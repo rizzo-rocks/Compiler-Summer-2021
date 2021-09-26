@@ -1,6 +1,9 @@
+========== Compiler ==========
 Enter an expression:
 >> dx==dy
 Push (1000)
 Push (1001)
 EQ
 Pop
+
+========== Interpreter ==========

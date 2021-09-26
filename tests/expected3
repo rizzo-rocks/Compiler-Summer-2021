@@ -1,5 +1,8 @@
+========== Compiler ==========
 Enter an expression:
 >> -2
 Push 2
 Neg
 Pop
+
+========== Interpreter ==========

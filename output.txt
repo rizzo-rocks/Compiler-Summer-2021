@@ -1,6 +1,12 @@
+========== Compiler ==========
 Enter an expression:
 >> 22+33
 Push 22
 Push 33
 Sum
 Pop
+
+========== Interpreter ==========
+Line: ========== Compiler ==========
+What is line: ========== Compiler ==========
+Line: Enter an expression:

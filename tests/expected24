@@ -1,3 +1,4 @@
+========== Compiler ==========
 Enter an expression:
 >> x=y=z=du&-2
 Push 1000;&x
@@ -11,3 +12,5 @@ Assign
 Assign
 Assign
 Pop
+
+========== Interpreter ==========

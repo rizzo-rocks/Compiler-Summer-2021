@@ -1,3 +1,4 @@
+========== Compiler ==========
 Enter an expression:
 T600: ;WHILE
 >>  1==2
@@ -23,3 +24,5 @@ JMP T602
 B602: ;ENDWHILE
 JMP T600
 B600: ;ENDWHILE
+
+========== Interpreter ==========

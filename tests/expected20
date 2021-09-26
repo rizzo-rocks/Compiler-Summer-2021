@@ -1,3 +1,4 @@
+========== Compiler ==========
 Enter an expression:
 >> 1+2-3
 Push 1
@@ -6,3 +7,5 @@ Sum
 Push 3
 Minus
 Pop
+
+========== Interpreter ==========

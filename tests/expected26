@@ -1,3 +1,4 @@
+========== Compiler ==========
 Enter an expression:
 >> (1<2)&(8!=9)
 Push 1
@@ -8,3 +9,5 @@ Push 9
 NE
 And
 Pop
+
+========== Interpreter ==========

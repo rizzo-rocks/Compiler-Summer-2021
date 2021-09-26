@@ -1,3 +1,4 @@
+========== Compiler ==========
 Enter an expression:
 >> y>x|45>=45
 Push (1000)
@@ -8,3 +9,5 @@ Push 45
 GE
 Or
 Pop
+
+========== Interpreter ==========

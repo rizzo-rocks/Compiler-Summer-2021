@@ -1,3 +1,4 @@
+========== Compiler ==========
 Enter an expression:
 >> 2*(3+5)
 Push 2
@@ -6,3 +7,5 @@ Push 5
 Sum
 Mul
 Pop
+
+========== Interpreter ==========

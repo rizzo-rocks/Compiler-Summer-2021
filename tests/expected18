@@ -1,3 +1,4 @@
+========== Compiler ==========
 Enter an expression:
 >> x=(y=5)+15
 Push 1000;&x
@@ -8,3 +9,5 @@ Push 15
 Sum
 Assign
 Pop
+
+========== Interpreter ==========
