@@ -26,9 +26,22 @@ JMP T600
 B600: ;ENDWHILE
 
 ========== Interpreter ==========
-Labels:
-T600:	-->	3
-T601:	-->	9
-B601:	-->	16
-T602:	-->	17
-B602:	-->	24
+T600: ;WHILE
+Push 1
+Push 2
+EQ
+BRZ B600
+T601: ;WHILE
+Push 3
+Push 4
+EQ
+BRZ B601
+JMP T601
+B601: ;ENDWHILE
+T602: ;WHILE
+Push 5
+Push 6
+EQ
+BRZ B602
+JMP T602
+B602: ;ENDWHILE

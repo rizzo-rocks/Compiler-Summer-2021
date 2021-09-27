@@ -639,10 +639,6 @@ int main(int argc, char **argv) {
     cout << "\n";
     cout << "========== Interpreter ==========\n";
 
-    string lines[100] = {};
-    int line_no = 0;
-    line = "";
-
     stack<int> interpreter_stack; // translate "Push 1" into the act of pushing the number 1 onto the stack
 
     map<string, int> predefined_lines;
@@ -661,6 +657,9 @@ int main(int argc, char **argv) {
     predefined_lines.insert("EQ", 13);
     predefined_lines.insert("And", 14);
     predefined_lines.insert("Or", 15);
+
+    int line_no = 0;
+    line = "";
 
     map<string, int> labels;
     for (;;) {
@@ -689,86 +688,37 @@ int main(int argc, char **argv) {
         }
     }
 
+    compiled.close();
+    fstream compiled2;
+    compiled2.open("output.txt");
+
+    string lines[100] = {};
+
     line = "";
     line_no = 0;
+    line_index = 0;
 
-    // now, read through the compiled output again, and do the stuff
+    // read compiled output again, strip excess output
     for (;;) {
         top3:
-        if (!getline(compiled, line)) break;
+        if (!getline(compiled2, line)) break;
         if (line == "========== Interpreter ==========") break;
-        line_no++;
 
         if (line == "========== Compiler ==========" // at this point, we can always skip the next three lines....
             || line == "Enter an expression:" 
-            || (line[0] == '<' && line[1] == '<'))
-        {
+            || ispunct(line[0])) {
             goto top3;
         }
-
-        //cout << "What is line: " << line << "\n";
-        //lines[lines_index++] = line;
-
-        // we first store all the lines as strings in our string array
-        // then we iterate through the array we just made, comparing each string to our possible strings
-        // if it's a pre-defined string, perform the action
-        // how do we know the action? switch on the line number
-        // check if it's not a pre-defined string before the switch, and break out
-
-        // we also need variable assignment
-        // rules:
-        // 1. there must be a variable assignment
-        // 2. that variable may then be used somewhere
-        // We substitute the var for the value assigned to it
-        // A map ^^
-        // If we try to use a var without assigning it a value first, complain
-
+        else {
+            lines[line_index++] = line;
+        }
     }
 
-    //for (int i=0; i<lines.length(); i++) {
-        /**
-         * We have an array of pre-defined strings.
-         * These strings will be associated with a unique identifying number, much like operators.
-         * We create a function that gets the number for the string, and we switch on that.
-         * Do this using a map.
-         */
-        /*switch (i) {
-            case lines[i] == "Pop": // can't evaluate in switch as boolean
-            break;
-            case lines[i] == "Assign":
-            break;
-            case lines[i] == "Neg":
-            break;
-            case lines[i] == "Exp":
-            break;
-            case lines[i] == "Mul":
-            break;
-            case lines[i] == "Div":
-            break;
-            case lines[i] == "Sum":
-            break;
-            case lines[i] == "Minus":
-            break;
-            case lines[i] == "LT":
-            break;
-            case lines[i] == "GT":
-            break;
-            case lines[i] == "LE":
-            break;
-            case lines[i] == "GE":
-            break;
-            case lines[i] == "NE":
-            break;
-            case lines[i] == "EQ":
-            break;
-            case lines[i] == "And":
-            break;
-            case lines[i] == "Or":
-            break;
-        }*/
-    //}
+    for (int i=0; i<line_index; i++) {
+        cout << lines[i] << "\n";
+    }
 
-    compiled.close();
+    compiled2.close();
 
     return 0;
 }
