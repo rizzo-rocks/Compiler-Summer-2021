@@ -58,6 +58,12 @@ public:
     int map_size() {
         return size;
     }
+
+    void print_map() {
+        for (int i=0; i<size; i++) {
+            cout << type1[i] << "\t-->\t" << type2[i] << "\n";
+        }
+    }
 };
 
 template <typename T>
@@ -661,24 +667,24 @@ int main(int argc, char **argv) {
         top2:
         if (!getline(compiled, line)) break;
         line_no++;
+        line_index = 0;
 
         string word = "";
-        char c = line[0];
+        char c = line[line_index];
         if (c == '\0') goto top2;
-        
+
         switch (c) {
-            case 'T':
             case 'B':
-                if (isalpha(line[line_index+1])) {
+                if (!isdigit(line[line_index+1])) {
                     break; // it's BRZ
                 }
+            case 'T':
+            while (!isspace(c)) {
+                word += get_string(c);
+                c = line[++line_index];
+            }
 
-                while (!isspace(c)) {
-                    word += get_string(c);
-                    c = line[++line_index];
-                }
-
-                labels.insert(word, line_no);
+            labels.insert(word, line_no);
             break;
         }
     }
@@ -690,6 +696,7 @@ int main(int argc, char **argv) {
     for (;;) {
         top3:
         if (!getline(compiled, line)) break;
+        if (line == "========== Interpreter ==========") break;
         line_no++;
 
         if (line == "========== Compiler ==========" // at this point, we can always skip the next three lines....
