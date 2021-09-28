@@ -10,8 +10,17 @@ using std::fstream;
 string get_string(char x)
 {
     string s(1, x);
-
     return s;  
+}
+
+int pow(int num1, int num2) {
+    int result = 1;
+
+    for (int i=0; i<num2; i++) {
+        result *= num1;
+    }
+
+    return result;
 }
 
 // ------------------------------------------------------------------------------ classes
@@ -33,7 +42,7 @@ public:
         return false;
     }
 
-    S at(S element) {
+    T at(S element) {
         for (int i=0; i<size; i++) {
             if (type1[i] == element) {
                 return type2[i];
@@ -631,8 +640,12 @@ int main(int argc, char **argv) {
         }
     }    
 
-    // at this point, the output file has been created and written to,
-    // assuming the correct command was used
+
+    /*
+        Note: Must use "./a.out < input.txt > output.txt" for 
+        interpreter to work.
+    */
+
 
     fstream compiled;
     compiled.open("output.txt");
@@ -657,6 +670,9 @@ int main(int argc, char **argv) {
     predefined_lines.insert("EQ", 13);
     predefined_lines.insert("And", 14);
     predefined_lines.insert("Or", 15);
+    predefined_lines.insert("Assign", 16);
+    //predefined_lines.insert("JMP", 17); need some way to splice up the line for this to work
+    //predefined_lines.insert("BRZ", 18);
 
     int line_no = 0;
     line = "";
@@ -698,27 +714,153 @@ int main(int argc, char **argv) {
     line_no = 0;
     line_index = 0;
 
-    // read compiled output again, strip excess output
     for (;;) {
         top3:
         if (!getline(compiled2, line)) break;
         if (line == "========== Interpreter ==========") break;
 
-        if (line == "========== Compiler ==========" // at this point, we can always skip the next three lines....
+        if (line == "========== Compiler =========="
             || line == "Enter an expression:" 
             || ispunct(line[0])) {
             goto top3;
         }
         else {
-            lines[line_index++] = line;
+            lines[line_index++] = line; // randomly stops adding lines to the array?
         }
     }
 
+    compiled2.close();
+
+    map<int,int> var_values;
+
+    // read through the array of lines for the interpreter to read,
+    // and perform the action
+
     for (int i=0; i<line_index; i++) {
-        cout << lines[i] << "\n";
+        string this_line = lines[i];
+
+        if (predefined_lines.is_in(this_line)) {
+            int action = predefined_lines.at(this_line);
+            int num1 = NULL;
+            int num2 = NULL;
+            int result = NULL;
+
+            switch (action) {
+                case 1: // Pop
+                    (void) interpreter_stack.pop();
+                break;
+                case 2: // Neg
+                    num2 = interpreter_stack.pop(); // what's a better way to automate this?
+                    num1 = interpreter_stack.pop();
+                    interpreter_stack.push(num1 - num2);
+                break;
+                case 3: //Exp
+                    num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+                    interpreter_stack.push(pow(num1, num2));
+                break;
+                case 4: // Mul
+                    num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+                    interpreter_stack.push(num1*num2);
+                break;
+                case 5: // Div
+                    num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+                    interpreter_stack.push(num1/num2);
+                break;
+                case 6: // Sum
+                    num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+                    interpreter_stack.push(num1+num2);
+                break;
+                case 7: // Minus
+                    num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+                    interpreter_stack.push(num1-num2);
+                break;
+                case 8: // LT
+                    num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+                    result = num1 - num2;
+
+                    if (result >= 0) interpreter_stack.push(0); 
+                    else if (result < 0) interpreter_stack.push(1); 
+                break;
+                case 9: // GT
+                    num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+                    result = num1 - num2;
+
+                    if (result > 0) interpreter_stack.push(1);
+                    else if (result <= 0) interpreter_stack.push(0);
+                break;
+                case 10: // LE
+                    num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+                    result = num1 - num2;
+
+                    if (result <= 0) interpreter_stack.push(1);
+                    else if (result > 0) interpreter_stack.push(0);
+                break;
+                case 11: // GE 
+                    num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+                    result = num1 - num2;
+
+                    if (result >= 0) interpreter_stack.push(1);
+                    else if (result < 0) interpreter_stack.push(0);
+                break;
+                case 12: // NE
+                    num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+                    result = num1 - num2;
+
+                    if (result != 0) interpreter_stack.push(1);
+                    else interpreter_stack.push(0);
+                break;
+                case 13: // EQ
+                    num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+                    result = num1 - num2;
+
+                    if (result == 0) interpreter_stack.push(1);
+                    else interpreter_stack.push(0);
+                break;
+                case 14: // And
+
+                break;
+                case 15: // Or
+
+                break;
+                case 16: // Assign
+                    num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+
+                    var_values.insert(num1, num2);
+                break;
+                case 17: // JMP
+
+                break;
+                case 18: // BRZ
+                break;
+            }
+        }
     }
 
-    compiled2.close();
+    /**
+     * Actions to take:
+     * 
+     * Labels: nothing, it's just a line no. marker
+     * Push: 
+     *  1. Push digit (no parens)
+     *  2. Push address (look for &)
+     *  3. Push indirect (parens)
+     * Directions: e.g. mul, div, sum, etc -- match to correct action
+     * 
+     */
+
+
 
     return 0;
 }
