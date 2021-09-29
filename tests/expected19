@@ -1,7 +1,7 @@
 ========== Compiler ==========
 Enter an expression:
 >> (y=5)
-Push 1000;&y
+Push 1000 ;&y
 Push 5
 Assign
 Pop

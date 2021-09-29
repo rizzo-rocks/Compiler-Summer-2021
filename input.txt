@@ -1,5 +1,5 @@
-while 1==2
-  while 3==4
+while x==2
+  while 3==x
   endwhile
   while 5==6
   endwhile

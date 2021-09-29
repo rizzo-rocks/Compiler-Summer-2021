@@ -1,9 +1,9 @@
 ========== Compiler ==========
 Enter an expression:
 >> x=y=z=du&-2
-Push 1000;&x
-Push 1001;&y
-Push 1002;&z
+Push 1000 ;&x
+Push 1001 ;&y
+Push 1002 ;&z
 Push (1003)
 Push 2
 Neg

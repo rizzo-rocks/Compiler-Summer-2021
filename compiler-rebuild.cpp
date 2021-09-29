@@ -63,6 +63,28 @@ public:
         type2[size] = element2;
         size++;
     }
+    void insert(S element1) {
+        if (size == 100) {
+            cerr << "Map is full\n";
+            exit(1);
+        }
+
+        type1[size] = element1;
+        type2[size] = 0;
+        size++;
+    }
+
+    void insert_value(S element1, T element2) {
+        for (int i=0; i<size; i++) {
+            if (type1[i] == element1) {
+                type2[i] = element2;
+                return;
+            }
+        }
+
+        cerr << "Cannot insert value for an entry that does not exist (parameter 1 not in map)\n";
+        exit(1);
+    }
 
     int map_size() {
         return size;
@@ -87,6 +109,8 @@ public:
 
     T pop() {
         if (size <= 0) {
+            //cerr << "Stack is empty\n";
+            //exit(1);
             return NULL;
         }
         return stuff[--size];
@@ -254,7 +278,7 @@ public:
             exit(1);
         }
         else {
-            cout << "Push " << get_var_address(this->left->variable) << ";&" << this->left->variable << "\n";
+            cout << "Push " << get_var_address(this->left->variable) << " ;&" << this->left->variable << "\n";
             right->print_postfix();
             cout << "Assign\n";
         }
@@ -641,10 +665,10 @@ int main(int argc, char **argv) {
     }    
 
 
-    /*
+    /* ------------------------------------------------------
         Note: Must use "./a.out < input.txt > output.txt" for 
         interpreter to work.
-    */
+       ------------------------------------------------------ */ 
 
 
     fstream compiled;
@@ -652,27 +676,28 @@ int main(int argc, char **argv) {
     cout << "\n";
     cout << "========== Interpreter ==========\n";
 
-    stack<int> interpreter_stack; // translate "Push 1" into the act of pushing the number 1 onto the stack
+    stack<int> interpreter_stack;
 
-    map<string, int> predefined_lines;
-    predefined_lines.insert("Pop", 1);
-    predefined_lines.insert("Neg", 2);
-    predefined_lines.insert("Exp", 3);
-    predefined_lines.insert("Mul", 4);
-    predefined_lines.insert("Div", 5);
-    predefined_lines.insert("Sum", 6);
-    predefined_lines.insert("Minus", 7);
-    predefined_lines.insert("LT", 8);
-    predefined_lines.insert("GT", 9);
-    predefined_lines.insert("LE", 10);
-    predefined_lines.insert("GE", 11);
-    predefined_lines.insert("NE", 12);
-    predefined_lines.insert("EQ", 13);
-    predefined_lines.insert("And", 14);
-    predefined_lines.insert("Or", 15);
-    predefined_lines.insert("Assign", 16);
-    //predefined_lines.insert("JMP", 17); need some way to splice up the line for this to work
-    //predefined_lines.insert("BRZ", 18);
+    map<string, int> predefined_words;
+    predefined_words.insert("Pop", 1);
+    predefined_words.insert("Neg", 2);
+    predefined_words.insert("Exp", 3);
+    predefined_words.insert("Mul", 4);
+    predefined_words.insert("Div", 5);
+    predefined_words.insert("Sum", 6);
+    predefined_words.insert("Minus", 7);
+    predefined_words.insert("LT", 8);
+    predefined_words.insert("GT", 9);
+    predefined_words.insert("LE", 10);
+    predefined_words.insert("GE", 11);
+    predefined_words.insert("NE", 12);
+    predefined_words.insert("EQ", 13);
+    predefined_words.insert("And", 14);
+    predefined_words.insert("Or", 15);
+    predefined_words.insert("Assign", 16);
+    predefined_words.insert("JMP", 17); 
+    predefined_words.insert("BRZ", 18);
+    predefined_words.insert("Push", 19);
 
     int line_no = 0;
     line = "";
@@ -694,7 +719,7 @@ int main(int argc, char **argv) {
                     break; // it's BRZ
                 }
             case 'T':
-            while (!isspace(c)) {
+            while (c != ':') {
                 word += get_string(c);
                 c = line[++line_index];
             }
@@ -714,7 +739,7 @@ int main(int argc, char **argv) {
     line_no = 0;
     line_index = 0;
 
-    for (;;) {
+    for (;;) { // could probably combine file reads into 1 big read
         top3:
         if (!getline(compiled2, line)) break;
         if (line == "========== Interpreter ==========") break;
@@ -733,51 +758,61 @@ int main(int argc, char **argv) {
 
     map<int,int> var_values;
 
-    // read through the array of lines for the interpreter to read,
-    // and perform the action
-
+    //int i=0;
     for (int i=0; i<line_index; i++) {
-        string this_line = lines[i];
+    //for (;;) {
+        //top4:
+        //if (i == line_index) break;
 
-        if (predefined_lines.is_in(this_line)) {
-            int action = predefined_lines.at(this_line);
-            int num1 = NULL;
-            int num2 = NULL;
-            int result = NULL;
+        string this_line = lines[i];
+        cout << this_line << "\n";
+
+        if (predefined_words.is_in(this_line)) {    // if the line matches exactly, easy
+            int action = predefined_words.at(this_line);
+            int num1 = 0;
+            int num2 = 0;
+            int result = 0;
 
             switch (action) {
                 case 1: // Pop
+                    //cout << "Popping " << interpreter_stack.top() << "\n";
                     (void) interpreter_stack.pop();
                 break;
                 case 2: // Neg
                     num2 = interpreter_stack.pop(); // what's a better way to automate this?
-                    num1 = interpreter_stack.pop();
-                    interpreter_stack.push(num1 - num2);
+                    // num1 = interpreter_stack.pop();
+                    interpreter_stack.push(num2*-1);
+                    //cout << num2 << " negated is " << interpreter_stack.top() << "\n"; //" is " << interpreter_stack.top() << "\n";
                 break;
                 case 3: //Exp
                     num2 = interpreter_stack.pop(); 
                     num1 = interpreter_stack.pop();
                     interpreter_stack.push(pow(num1, num2));
+                    //cout << num1 << " to the pow of " << num2 < " is " << interpreter_stack.top() << "\n";
                 break;
                 case 4: // Mul
                     num2 = interpreter_stack.pop(); 
                     num1 = interpreter_stack.pop();
                     interpreter_stack.push(num1*num2);
+                    //cout << num1 << " times " << num2 << " is " << interpreter_stack.top() << "\n";
                 break;
                 case 5: // Div
                     num2 = interpreter_stack.pop(); 
                     num1 = interpreter_stack.pop();
                     interpreter_stack.push(num1/num2);
+                    //cout << num1 << " divided by " << num2 << " is " << interpreter_stack.top() << "\n";
                 break;
                 case 6: // Sum
                     num2 = interpreter_stack.pop(); 
                     num1 = interpreter_stack.pop();
                     interpreter_stack.push(num1+num2);
+                    //cout << num1 << " plus " << num2 << " is " << interpreter_stack.top() << "\n";
                 break;
                 case 7: // Minus
                     num2 = interpreter_stack.pop(); 
                     num1 = interpreter_stack.pop();
                     interpreter_stack.push(num1-num2);
+                   // cout << num1 << " minus " << num2 << " is " << interpreter_stack.top() << "\n";
                 break;
                 case 8: // LT
                     num2 = interpreter_stack.pop(); 
@@ -786,6 +821,8 @@ int main(int argc, char **argv) {
 
                     if (result >= 0) interpreter_stack.push(0); 
                     else if (result < 0) interpreter_stack.push(1); 
+
+                    //cout << num1 << " less than " << num2 << " is " << interpreter_stack.top() << "\n";
                 break;
                 case 9: // GT
                     num2 = interpreter_stack.pop(); 
@@ -794,6 +831,8 @@ int main(int argc, char **argv) {
 
                     if (result > 0) interpreter_stack.push(1);
                     else if (result <= 0) interpreter_stack.push(0);
+
+                    //cout << num1 << " greater than " << num2 << " is " << interpreter_stack.top() << "\n";
                 break;
                 case 10: // LE
                     num2 = interpreter_stack.pop(); 
@@ -802,6 +841,8 @@ int main(int argc, char **argv) {
 
                     if (result <= 0) interpreter_stack.push(1);
                     else if (result > 0) interpreter_stack.push(0);
+
+                    //cout << num1 << " less than or equal to " << num2 << " is " << interpreter_stack.top() << "\n";
                 break;
                 case 11: // GE 
                     num2 = interpreter_stack.pop(); 
@@ -810,6 +851,8 @@ int main(int argc, char **argv) {
 
                     if (result >= 0) interpreter_stack.push(1);
                     else if (result < 0) interpreter_stack.push(0);
+
+                    //cout << num1 << " greater than or equal to " << num2 << " is " << interpreter_stack.top() << "\n";
                 break;
                 case 12: // NE
                     num2 = interpreter_stack.pop(); 
@@ -818,6 +861,8 @@ int main(int argc, char **argv) {
 
                     if (result != 0) interpreter_stack.push(1);
                     else interpreter_stack.push(0);
+
+                    //cout << num1 << " not equal to " << num2 << " is " << interpreter_stack.top() << "\n";
                 break;
                 case 13: // EQ
                     num2 = interpreter_stack.pop(); 
@@ -826,41 +871,121 @@ int main(int argc, char **argv) {
 
                     if (result == 0) interpreter_stack.push(1);
                     else interpreter_stack.push(0);
+
+                    //cout << num1 << " equal to " << num2 << " is " << interpreter_stack.top() << "\n";
                 break;
                 case 14: // And
-
+                    // ?
                 break;
                 case 15: // Or
-
+                    // ?
                 break;
                 case 16: // Assign
                     num2 = interpreter_stack.pop(); 
                     num1 = interpreter_stack.pop();
 
-                    var_values.insert(num1, num2);
-                break;
-                case 17: // JMP
+                    // This won't work for cases like: x=y=5
+                    var_values.insert_value(num1, num2);
 
-                break;
-                case 18: // BRZ
+                    //cout << "The address " << num1 << " holds the value " << var_values.at(num1) << "\n";
                 break;
             }
+
+            //i++;
         }
+        /*else // it's Push # or Push (#) or BRZ/JMP or a label 
+        {
+            int line_indexer = 0;
+            char c = this_line[line_indexer];
+            string part1 = "";
+            string part2 = "";
+
+            while (!isspace(c)) {
+                part1 += get_string(c);
+                c = this_line[++line_indexer];
+            }
+            while (isspace(c)) {
+                c = this_line[++line_indexer];
+            }
+            while (!isspace(c) || c != '\0') {
+                part2 += get_string(c);
+                c = this_line[++line_indexer];
+            }
+
+            if (predefined_words.is_in(part1)) {
+                int action = predefined_words.at(part1);
+
+                switch (action) {
+                    case 17: // JMP
+                    case 18: // BRZ
+                        if (labels.is_in(part2)) {
+                            i = labels.at(part2);
+
+                            //cout << "Label: " << part2 << ". Takes us to line " << i << "\n";
+                            goto top4;
+                        }
+                        else 
+                        {
+                            cerr << "This error shouldn't get thrown. Something has gone terribly wrong.\n";
+                            exit(1);
+                        }
+                    break;
+                    case 19: // Push
+                        int digit_index = 0;
+                        char next_digit = part2[digit_index];
+                        int num_to_push = 0;
+
+                        if (isdigit(part2[0])) { // Push address or a number
+                            num_to_push = next_digit - 48;
+                            next_digit = part2[++digit_index];
+
+                            while (next_digit != '\0') {
+                                int temp = 10 - (next_digit - 48);
+                                num_to_push *= 10;
+                                num_to_push += temp;
+
+                                next_digit = part2[++digit_index];
+                            }
+                            // Problem with this method: I can only do arithmetic up to numbers that are 1000
+                            if ((num_to_push % 1000) >= 1) { // address
+                                var_values.insert(num_to_push);
+                            }
+
+                            interpreter_stack.push(num_to_push);
+
+                            //cout << "Pushed the number " << interpreter_stack.top() << "\n";
+                        }
+                        else { // Push indirect
+                            next_digit = part2[++digit_index];
+
+                            while (next_digit != ')') {
+                                int temp = 10 - (next_digit - 48);
+                                num_to_push *= 10;
+                                num_to_push += temp;
+
+                                next_digit = part2[++digit_index];
+                            }
+
+                            if (var_values.is_in(next_digit)) {
+                                interpreter_stack.push(var_values.at(next_digit));
+
+                                //cout << "Pushed the contents at the address " << next_digit << " which is " << interpreter_stack.top() << "\n";
+                            }
+                            else {
+                                cerr << "Must assign a value to a variable before using it\n";
+                                exit(1);
+                            }
+                        }
+
+                        i++;
+                    break;
+                }
+            }
+            else {
+                // it's a label (don't do anything for labels?)
+            }
+        }*/
     }
-
-    /**
-     * Actions to take:
-     * 
-     * Labels: nothing, it's just a line no. marker
-     * Push: 
-     *  1. Push digit (no parens)
-     *  2. Push address (look for &)
-     *  3. Push indirect (parens)
-     * Directions: e.g. mul, div, sum, etc -- match to correct action
-     * 
-     */
-
-
 
     return 0;
 }

@@ -1,15 +1,15 @@
 ========== Compiler ==========
 Enter an expression:
 T600: ;WHILE
->>  1==2
-Push 1
+>>  x==2
+Push (1000)
 Push 2
 EQ
 BRZ B600
 T601: ;WHILE
->>  3==4
+>>  3==x
 Push 3
-Push 4
+Push (1000)
 EQ
 BRZ B601
 JMP T601
@@ -27,13 +27,13 @@ B600: ;ENDWHILE
 
 ========== Interpreter ==========
 T600: ;WHILE
-Push 1
+Push (1000)
 Push 2
 EQ
 BRZ B600
 T601: ;WHILE
 Push 3
-Push 4
+Push (1000)
 EQ
 BRZ B601
 JMP T601
