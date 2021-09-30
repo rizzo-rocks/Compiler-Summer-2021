@@ -1,47 +1,584 @@
 ========== Compiler ==========
 Enter an expression:
+>> count = 20
+Push 1000 ;&count
+Push 20
+Assign
+Pop
+>> x = 0
+Push 1001 ;&x
+Push 0
+Assign
+Pop
+>> a = 1
+Push 1002 ;&a
+Push 1
+Assign
+Pop
+>> b = 1
+Push 1003 ;&b
+Push 1
+Assign
+Pop
 T600: ;WHILE
->>  x==2
+>>  x < count
+Push (1001)
 Push (1000)
-Push 2
-EQ
+LT
 BRZ B600
-T601: ;WHILE
->>  3==x
-Push 3
-Push (1000)
-EQ
-BRZ B601
-JMP T601
-B601: ;ENDWHILE
-T602: ;WHILE
->>  5==6
-Push 5
-Push 6
-EQ
-BRZ B602
-JMP T602
-B602: ;ENDWHILE
+>>  c = a + b
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+>>  a = b
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+>>  b = c
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+>>  x = x + 1
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
 JMP T600
 B600: ;ENDWHILE
 
 ========== Interpreter ==========
+Push 1000 ;&count
+Push 20
+Assign
+Pop
+Push 1001 ;&x
+Push 0
+Assign
+Pop
+Push 1002 ;&a
+Push 1
+Assign
+Pop
+Push 1003 ;&b
+Push 1
+Assign
+Pop
 T600: ;WHILE
+Push (1001)
 Push (1000)
-Push 2
-EQ
+LT
 BRZ B600
-T601: ;WHILE
-Push 3
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
 Push (1000)
-EQ
-BRZ B601
-JMP T601
-B601: ;ENDWHILE
-T602: ;WHILE
-Push 5
-Push 6
-EQ
-BRZ B602
-JMP T602
-B602: ;ENDWHILE
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+
+========== Results ==========
+1000 20
+1001 20
+1002 10946
+1003 17711
+1004 17711

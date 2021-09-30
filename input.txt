@@ -1,6 +1,10 @@
-while x==2
-  while 3==x
-  endwhile
-  while 5==6
-  endwhile
+count = 20
+x = 0
+a = 1
+b = 1
+while x < count
+ c = a + b
+ a = b
+ b = c
+ x = x + 1
 endwhile 

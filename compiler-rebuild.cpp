@@ -82,8 +82,7 @@ public:
             }
         }
 
-        cerr << "Cannot insert value for an entry that does not exist (parameter 1 not in map)\n";
-        exit(1);
+        insert(element1, element2);
     }
 
     int map_size() {
@@ -109,9 +108,9 @@ public:
 
     T pop() {
         if (size <= 0) {
-            //cerr << "Stack is empty\n";
-            //exit(1);
-            return NULL;
+            cerr << "Stack is empty\n";
+            exit(1);
+            // return NULL;
         }
         return stuff[--size];
     }
@@ -699,49 +698,14 @@ int main(int argc, char **argv) {
     predefined_words.insert("BRZ", 18);
     predefined_words.insert("Push", 19);
 
-    int line_no = 0;
-    line = "";
-
-    map<string, int> labels;
-    for (;;) {
-        top2:
-        if (!getline(compiled, line)) break;
-        line_no++;
-        line_index = 0;
-
-        string word = "";
-        char c = line[line_index];
-        if (c == '\0') goto top2;
-
-        switch (c) {
-            case 'B':
-                if (!isdigit(line[line_index+1])) {
-                    break; // it's BRZ
-                }
-            case 'T':
-            while (c != ':') {
-                word += get_string(c);
-                c = line[++line_index];
-            }
-
-            labels.insert(word, line_no);
-            break;
-        }
-    }
-
-    compiled.close();
-    fstream compiled2;
-    compiled2.open("output.txt");
-
     string lines[100] = {};
 
     line = "";
-    line_no = 0;
-    line_index = 0;
+    int iline = 0;
 
     for (;;) { // could probably combine file reads into 1 big read
         top3:
-        if (!getline(compiled2, line)) break;
+        if (!getline(compiled, line)) break;
         if (line == "========== Interpreter ==========") break;
 
         if (line == "========== Compiler =========="
@@ -750,19 +714,44 @@ int main(int argc, char **argv) {
             goto top3;
         }
         else {
-            lines[line_index++] = line; // randomly stops adding lines to the array?
+            lines[iline++] = line; 
         }
     }
 
-    compiled2.close();
+    compiled.close();
+
+    int nlines = iline;
+
+    int line_no = 0;
+    line = "";
+
+    map<string, int> labels;
+    for (int i = 0;i < nlines;i++) {
+        line = lines[i];
+    
+        int ich = 0;
+        string word = "";
+        char c = line[ich];
+        if (c == '\0') continue;
+
+        const char *p = strchr(line.c_str(), ':');
+        if (!p) continue;
+
+        while (c != ':') {
+            word += get_string(c);
+            c = line[++ich];
+        }
+
+        labels.insert(word, i);
+    }
 
     map<int,int> var_values;
 
-    //int i=0;
-    for (int i=0; i<line_index; i++) {
+    int i=0;
+    for (int i=0; i<nlines; i++) {
     //for (;;) {
         //top4:
-        //if (i == line_index) break;
+        if (lines[i] == "") break;
 
         string this_line = lines[i];
         cout << this_line << "\n";
@@ -817,21 +806,15 @@ int main(int argc, char **argv) {
                 case 8: // LT
                     num2 = interpreter_stack.pop(); 
                     num1 = interpreter_stack.pop();
-                    result = num1 - num2;
-
-                    if (result >= 0) interpreter_stack.push(0); 
-                    else if (result < 0) interpreter_stack.push(1); 
-
+                    interpreter_stack.push(num1<num2);
+                
                     //cout << num1 << " less than " << num2 << " is " << interpreter_stack.top() << "\n";
                 break;
                 case 9: // GT
                     num2 = interpreter_stack.pop(); 
                     num1 = interpreter_stack.pop();
-                    result = num1 - num2;
-
-                    if (result > 0) interpreter_stack.push(1);
-                    else if (result <= 0) interpreter_stack.push(0);
-
+                    interpreter_stack.push(num1>num2);
+                
                     //cout << num1 << " greater than " << num2 << " is " << interpreter_stack.top() << "\n";
                 break;
                 case 10: // LE
@@ -867,17 +850,18 @@ int main(int argc, char **argv) {
                 case 13: // EQ
                     num2 = interpreter_stack.pop(); 
                     num1 = interpreter_stack.pop();
-                    result = num1 - num2;
-
-                    if (result == 0) interpreter_stack.push(1);
-                    else interpreter_stack.push(0);
-
+                    interpreter_stack.push(num1==num2);
                     //cout << num1 << " equal to " << num2 << " is " << interpreter_stack.top() << "\n";
                 break;
                 case 14: // And
-                    // ?
+                num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+                    interpreter_stack.push(num1&&num2);
                 break;
                 case 15: // Or
+                num2 = interpreter_stack.pop(); 
+                    num1 = interpreter_stack.pop();
+                    interpreter_stack.push(num1||num2);
                     // ?
                 break;
                 case 16: // Assign
@@ -886,14 +870,13 @@ int main(int argc, char **argv) {
 
                     // This won't work for cases like: x=y=5
                     var_values.insert_value(num1, num2);
+                    interpreter_stack.push(num2);
 
                     //cout << "The address " << num1 << " holds the value " << var_values.at(num1) << "\n";
                 break;
             }
-
-            //i++;
         }
-        /*else // it's Push # or Push (#) or BRZ/JMP or a label 
+        else // it's Push # or Push (#) or BRZ/JMP or a label 
         {
             int line_indexer = 0;
             char c = this_line[line_indexer];
@@ -907,7 +890,7 @@ int main(int argc, char **argv) {
             while (isspace(c)) {
                 c = this_line[++line_indexer];
             }
-            while (!isspace(c) || c != '\0') {
+            while (!isspace(c) &&c != '\0') {
                 part2 += get_string(c);
                 c = this_line[++line_indexer];
             }
@@ -916,13 +899,19 @@ int main(int argc, char **argv) {
                 int action = predefined_words.at(part1);
 
                 switch (action) {
-                    case 17: // JMP
                     case 18: // BRZ
+                    {
+                        int top = interpreter_stack.pop();
+                        if (top)
+                            continue;
+                    }
+
+                         // FALL THROUGH TO JMP
+
+                    case 17: // JMP
                         if (labels.is_in(part2)) {
                             i = labels.at(part2);
-
-                            //cout << "Label: " << part2 << ". Takes us to line " << i << "\n";
-                            goto top4;
+                            continue;
                         }
                         else 
                         {
@@ -935,56 +924,31 @@ int main(int argc, char **argv) {
                         char next_digit = part2[digit_index];
                         int num_to_push = 0;
 
-                        if (isdigit(part2[0])) { // Push address or a number
-                            num_to_push = next_digit - 48;
-                            next_digit = part2[++digit_index];
-
-                            while (next_digit != '\0') {
-                                int temp = 10 - (next_digit - 48);
-                                num_to_push *= 10;
-                                num_to_push += temp;
-
-                                next_digit = part2[++digit_index];
-                            }
-                            // Problem with this method: I can only do arithmetic up to numbers that are 1000
-                            if ((num_to_push % 1000) >= 1) { // address
-                                var_values.insert(num_to_push);
-                            }
-
+                        int addr;
+                        if (part2[0] == '(') {
+                            // indirect
+                            addr = atoi(part2.c_str()+1);
+                            num_to_push = var_values.at(addr);
                             interpreter_stack.push(num_to_push);
-
-                            //cout << "Pushed the number " << interpreter_stack.top() << "\n";
                         }
-                        else { // Push indirect
-                            next_digit = part2[++digit_index];
-
-                            while (next_digit != ')') {
-                                int temp = 10 - (next_digit - 48);
-                                num_to_push *= 10;
-                                num_to_push += temp;
-
-                                next_digit = part2[++digit_index];
-                            }
-
-                            if (var_values.is_in(next_digit)) {
-                                interpreter_stack.push(var_values.at(next_digit));
-
-                                //cout << "Pushed the contents at the address " << next_digit << " which is " << interpreter_stack.top() << "\n";
-                            }
-                            else {
-                                cerr << "Must assign a value to a variable before using it\n";
-                                exit(1);
-                            }
+                        else {
+                            num_to_push = atoi(part2.c_str());
+                            interpreter_stack.push(num_to_push);
                         }
-
-                        i++;
                     break;
                 }
             }
             else {
                 // it's a label (don't do anything for labels?)
             }
-        }*/
+        }
+    }
+
+    cout << "\n========== Results ==========\n";
+    for (int addr = 1000; addr <= 1005; addr++) {
+        if (var_values.is_in(addr)) {
+            cout << addr << " " << var_values.at(addr) << "\n";
+        }
     }
 
     return 0;
