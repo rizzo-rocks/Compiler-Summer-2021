@@ -5,5 +5,3 @@ Push 1000 ;&y
 Push 5
 Assign
 Pop
-
-========== Interpreter ==========

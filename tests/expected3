@@ -4,5 +4,3 @@ Enter an expression:
 Push 2
 Neg
 Pop
-
-========== Interpreter ==========

@@ -8,5 +8,3 @@ Neg
 Push 3
 Div
 Pop
-
-========== Interpreter ==========

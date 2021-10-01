@@ -14,5 +14,3 @@ Push 3
 Mul
 Sum
 Pop
-
-========== Interpreter ==========

@@ -18,5 +18,3 @@ EQ
 BRZ B502 ;IF
 B502: ;ENDIF
 B500: ;ENDIF
-
-========== Interpreter ==========

@@ -13,5 +13,3 @@ Assign
 Pop
 JMP T600
 B600: ;ENDWHILE
-
-========== Interpreter ==========

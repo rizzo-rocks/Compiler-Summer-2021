@@ -9,5 +9,3 @@ Push 3
 Mul
 Neg
 Pop
-
-========== Interpreter ==========

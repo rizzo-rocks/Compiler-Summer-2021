@@ -11,5 +11,3 @@ Push 0
 Assign
 Pop
 B500: ;ENDIF
-
-========== Interpreter ==========

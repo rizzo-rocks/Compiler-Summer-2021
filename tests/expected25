@@ -5,5 +5,3 @@ Push 123
 Push 456
 LE
 Pop
-
-========== Interpreter ==========

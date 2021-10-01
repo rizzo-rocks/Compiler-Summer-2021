@@ -9,5 +9,3 @@ Push 9
 NE
 And
 Pop
-
-========== Interpreter ==========

@@ -16,5 +16,3 @@ JMP T601
 B601: ;ENDWHILE
 JMP T600
 B600: ;ENDWHILE
-
-========== Interpreter ==========
