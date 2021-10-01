@@ -1,0 +1,530 @@
+
+========== Interpreter ==========
+Push 1000 ;&count
+Push 20
+Assign
+Pop
+Push 1001 ;&x
+Push 0
+Assign
+Pop
+Push 1002 ;&a
+Push 1
+Assign
+Pop
+Push 1003 ;&b
+Push 1
+Assign
+Pop
+T600: ;WHILE
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+Push 1004 ;&c
+Push (1002)
+Push (1003)
+Sum
+Assign
+Pop
+Push 1002 ;&a
+Push (1003)
+Assign
+Pop
+Push 1003 ;&b
+Push (1004)
+Assign
+Pop
+Push 1001 ;&x
+Push (1001)
+Push 1
+Sum
+Assign
+Pop
+JMP T600
+Push (1001)
+Push (1000)
+LT
+BRZ B600
+
+========== Results ==========
+1000 20
+1001 20
+1002 10946
+1003 17711
+1004 17711
